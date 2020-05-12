@@ -1,0 +1,92 @@
+
+<!-- saved from url=(0035)http://127.0.0.1:5500/mainpage.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script type="text/javascript">
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script></head><body>
+
+   
+
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+
+
+    <div class="navbar">
+        <div class="navbarStart">
+            <div>Hi! Sign in or register</div>
+            <div class="vr"></div>
+            <div>Daily Deals</div>
+            <div class="vr"></div>
+            <div>Sell</div>
+            <div class="vr"></div>
+            <div>Help &amp; Contact</div>
+        </div>
+        <div class="navbarEnd">
+            <img src="./Document_files/israel.png" class="icon">
+            <div class="vr"></div>
+            <div>Ship to</div>
+            <div class="vr"></div>
+            <div>Watchlist</div>
+            <div class="vr"></div>
+            <div>My eBay</div>
+            <img src="./Document_files/notification.png" class="icon">
+            <img src="./Document_files/shopping-cart.png" class="icon">
+        </div>
+    </div>
+    <hr>
+    <div class="searchBar">
+        <img src="./Document_files/logo.png" class="icon">
+        <div id="byCategory">
+            Shop by category
+        </div>
+        <div class="searchInput">
+            <div class="inputStart">
+                <img src="./Document_files/search.png" class="icon">
+                <div style=" white-space: nowrap;
+                overflow: hidden; text-overflow: ellipsis;">Search for anything</div>
+            </div>
+            <div class="inputEnd">
+                <div class="vr"></div>
+                <div>All categories</div>
+                <img src="./Document_files/arrow-down.png" class="icon">
+            </div>
+        </div>
+        <div class="searchButton">Search</div>
+        <div>Advanced</div>
+    </div>
+   
+<!-- Code injec--><link rel="stylesheet" type="text/css" href="./Document_files/style.css"></body></html>
