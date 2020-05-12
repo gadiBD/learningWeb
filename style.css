@@ -119,8 +119,8 @@ li {
     margin: 2vh 0 !important;
   }
   .footer {
-    margin-right: 15vw;
-    margin-left: 7vw;
+    margin-right: 8vw;
+    margin-left: 3vw;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
