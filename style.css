@@ -29,6 +29,8 @@ body {
 #displayText {
   font-size: 3em;
   margin-left: 0.3em;
+  max-width: 100%;
+  overflow: scroll;
 }
 
 #calculator > button {

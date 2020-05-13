@@ -9,6 +9,9 @@ const operations = {
     return firstNum * secondNum;
   },
   "/": (firstNum, secondNum) => {
+    if (secondNum === 0) {
+        return NaN;
+    }
     return firstNum / secondNum;
   },
 };
@@ -27,6 +30,9 @@ class Calculator {
   }
 
   appendNumber(number) {
+    if (!this.firstNumber) {
+        this.clear();
+    }
     if (this.operation) {
       this.secondNumber = this.secondNumber.toString() + number.toString();
     } else {
@@ -41,12 +47,14 @@ class Calculator {
   }
 
   compute() {
-    this.firstNumber = operations[this.operation](
-      parseInt(this.firstNumber),
-      parseInt(this.secondNumber)
-    );
-    this.secondNumber = "";
-    this.operation = "";
+    if (this.secondNumber) {
+      this.firstNumber = operations[this.operation](
+        parseInt(this.firstNumber),
+        parseInt(this.secondNumber)
+      );
+      this.secondNumber = "";
+      this.operation = "";
+    }
   }
 
   updateDisplay() {
