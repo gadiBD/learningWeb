@@ -23,58 +23,80 @@ class Calculator {
     this.clear();
   }
 
-  clear() {
-    this.firstNumber = "";
-    this.secondNumber = "";
-    this.operation = "";
+  clear = () => {
+    this.operands = [];
+    this.operators = [];
   }
 
-  delete() {
-    if (this.secondNumber) {
-      this.secondNumber = this.secondNumber.toString().slice(0, -1);
-    } else if (this.operation) {
-      this.operation = "";
+  delete = () =>  {
+    if (this.operands.length === this.operators.length) {
+      this.operators.pop();
     } else {
-      this.firstNumber = this.firstNumber.toString().slice(0, -1);
-    }
-  }
-
-  appendNumber(number) {
-      
-    if (isNaN(this.firstNumber)) {
-      this.clear();
-    }
-
-    if (this.operation) {
-      if (!(number === "." && this.secondNumber.includes("."))) {
-        this.secondNumber = this.secondNumber.toString() + number.toString();
-      }
-    } else {
-      if (!(number === "." && this.firstNumber.includes("."))) {
-        this.firstNumber = this.firstNumber.toString() + number.toString();
+      if (this.operands[this.operands.length - 1].length === 1) {
+        this.operands.pop();
+      } else {
+        this.operands[this.operands.length - 1] = this.operands[
+          this.operands.length - 1
+        ]
+          .toString()
+          .slice(0, -1);
       }
     }
   }
 
-  chooseOperation(operation) {
-    if (!this.secondNumber && this.firstNumber) {
-      this.operation = operation;
+  checkNaN = () => {
+    if (this.operands.length === 1 && this.operands[0] != "." && isNaN(this.operands[0])) {
+      this.operands = [];
     }
   }
 
-  compute() {
-    if (this.secondNumber) {
-      this.firstNumber = operations[this.operation](
-        parseFloat(this.firstNumber),
-        parseFloat(this.secondNumber)
-      ).toString();
-      this.secondNumber = "";
-      this.operation = "";
+  appendNumber = (number) => {
+    this.checkNaN();
+
+    if (this.operands.length === this.operators.length) {
+      this.operands.push(number);
+    } else {
+      if (!(number === "." && this.operands[this.operands.length - 1].includes("."))) 
+      {
+        this.operands[this.operands.length - 1] =
+          this.operands[this.operands.length - 1].toString() +
+          number.toString();
+      }
     }
   }
 
-  updateDisplay() {
-    displayText.innerHTML = `${this.firstNumber} ${this.operation} ${this.secondNumber}`;
+  chooseOperation = (operation) => {
+    if (this.operands.length === this.operators.length) {
+      this.operators[this.operators.length - 1] = operation;
+    } else if (this.operands.length > this.operators.length) {
+      this.operators.push(operation);
+    }
+  }
+
+  compute = () => {
+    if (this.operands.length > this.operators.length) {
+      let result = this.operands[0];
+      for (let i = 1; i < this.operands.length; i++) {
+        result = operations[this.operators[i - 1]](
+          parseFloat(result),
+          parseFloat(this.operands[i])
+        );
+      }
+      this.operands = [(Math.round((result + Number.EPSILON) * 100) / 100).toString()];
+      this.operators = [];
+    }
+  }
+
+  updateDisplay = () => {
+    let displayResult = "";
+    for (let i = 0; i < this.operators.length; i++) {
+      displayResult += this.operands[i];
+      displayResult += this.operators[i];
+    }
+    if (this.operands.length > this.operators.length) {
+      displayResult += this.operands[this.operands.length - 1];
+    }
+    displayText.innerHTML = displayResult;
   }
 }
 
