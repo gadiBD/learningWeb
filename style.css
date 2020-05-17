@@ -17,10 +17,6 @@ body {
   padding: 1vw;;
 }
 
-#clear, #delete {
-  grid-column: span 2;
-}
-
 #displayWrapper {
   grid-column: span 4;
   background-color: #C0D0BF;
