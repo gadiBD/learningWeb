@@ -8,7 +8,7 @@ export default class Operand {
   };
 
   appendNumber = (number) => {
-    if (isNaN(this.number)) {
+    if (isNaN(this.number) && this.number != ".") {
       this.number = number;
     } else if (!(number === "." && this.number.includes("."))) {
       this.number = this.number.toString() + number.toString();

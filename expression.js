@@ -104,14 +104,14 @@ export default class Expression {
       this.operands.forEach((expression, index) => {
         if (expression instanceof Expression) {
           expression.compute();
-          this.operands[index] = new Operand(expression.operands[0]);
+          this.operands[index] = new Operand(expression.operands[0].toString());
         }
       });
       this.computeCertainOperations(["*", "/"]);
       this.computeCertainOperations(["+", "-"]);
       this.operands = [
         new Operand(
-          Math.round((parseFloat(this.operands[0]) + Number.EPSILON) * 100) / 100
+          (Math.round((parseFloat(this.operands[0]) + Number.EPSILON) * 100) / 100).toString()
         ),
       ];
       this.operators = [];
