@@ -14,12 +14,12 @@ export default class Expression {
   };
 
   delete = () => {
-    // If last operand is expression
+    // Checks if last operand is an expression
     if (
       this.operands.length > this.operators.length &&
       this.operands[this.operands.length - 1] instanceof Expression
     ) {
-      // Delete starting parenthesis and the Expression
+      // When number of operands is 0, delete starting parenthesis and the Expression itself
       if (this.operands[this.operands.length - 1].operands.length === 0) {
         this.operands[this.operands.length - 1].startParenthesis = false;
         this.operands.pop();
@@ -47,7 +47,7 @@ export default class Expression {
   };
 
   appendNumber = (number) => {
-    // If last operand is expression
+    // Checks if last operand is an expression
     if (
       this.operands.length > this.operators.length &&
       this.operands[this.operands.length - 1] instanceof Expression
@@ -66,14 +66,14 @@ export default class Expression {
 
   isValid = () => {
     let isValid = true;
-    // check if all interior expressions are valid
+    // Checks if all interior expressions are valid
     this.operands.forEach((expression, index) => {
       if (expression instanceof Expression) {
         isValid = isValid && expression.isValid();
         isValid = isValid && expression.startParenthesis && expression.endParenthesis;
       }
     });
-    // check correct number of operands and operators
+    // Check if correct number of operands and operators
     return isValid && this.operands.length > this.operators.length;
   };
 
@@ -88,6 +88,8 @@ export default class Expression {
         parseFloat(this.operands[index]),
         parseFloat(this.operands[index + 1])
       );
+
+      // Deletes the operand and operator
       this.operands.splice(index + 1, 1);
       this.operators.splice(index, 1);
       index = this.operators.findIndex((operator) =>
@@ -98,11 +100,11 @@ export default class Expression {
 
   compute = () => {
     if (this.isValid()) {
-      // first compute all interior expressions and turn them into simple operands
+      // First compute all interior expressions and turn them into simple operands
       this.operands.forEach((expression, index) => {
         if (expression instanceof Expression) {
           expression.compute();
-          this.operands[index] = new Operand(expression.operands[0].toString());
+          this.operands[index] = new Operand(expression.operands[0]);
         }
       });
       this.computeCertainOperations(["*", "/"]);
@@ -117,7 +119,7 @@ export default class Expression {
   };
 
   chooseOperation = (operation) => {
-    // if last operand is operation
+    // Checks if last operand is an Expression that is not closed
     if (
       this.operands.length > this.operators.length &&
       this.operands[this.operands.length - 1] instanceof Expression &&
@@ -129,14 +131,14 @@ export default class Expression {
     else if (this.operands.length === this.operators.length) {
       this.operators[this.operators.length - 1] = operation;
     }
-    // add new operation
+    // Add new operation
     else if (this.operands.length > this.operators.length) {
       this.operators.push(operation);
     }
   };
 
   openParenthesis = () => {
-    // If last operand is operation
+    // Checks if last operand is Expression
     if (
       this.operands.length > this.operators.length &&
       this.operands[this.operands.length - 1] instanceof Expression
