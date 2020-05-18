@@ -111,7 +111,9 @@ export default class Expression {
       this.computeCertainOperations(["+", "-"]);
       this.operands = [
         new Operand(
-          (Math.round((parseFloat(this.operands[0]) + Number.EPSILON) * 100) / 100).toString()
+          (
+            Math.round((parseFloat(this.operands[0]) + Number.EPSILON) * 100) / 100
+          ).toString()
         ),
       ];
       this.operators = [];
@@ -119,21 +121,24 @@ export default class Expression {
   };
 
   chooseOperation = (operation) => {
-    // Checks if last operand is an Expression that is not closed
-    if (
-      this.operands.length > this.operators.length &&
-      this.operands[this.operands.length - 1] instanceof Expression &&
-      !this.operands[this.operands.length - 1].endParenthesis
-    ) {
-      this.operands[this.operands.length - 1].chooseOperation(operation);
-    }
-    // In order to switch current last operation
-    else if (this.operands.length === this.operators.length) {
-      this.operators[this.operators.length - 1] = operation;
-    }
-    // Add new operation
-    else if (this.operands.length > this.operators.length) {
-      this.operators.push(operation);
+    // Can only choose operation if there is a valid first operand
+    if (!(this.operands.length > 0 && isNaN(this.operands[0]))) {
+      // Checks if last operand is an Expression that is not closed
+      if (
+        this.operands.length > this.operators.length &&
+        this.operands[this.operands.length - 1] instanceof Expression &&
+        !this.operands[this.operands.length - 1].endParenthesis
+      ) {
+        this.operands[this.operands.length - 1].chooseOperation(operation);
+      }
+      // In order to switch current last operation
+      else if (this.operands.length === this.operators.length) {
+        this.operators[this.operators.length - 1] = operation;
+      }
+      // Add new operation
+      else if (this.operands.length > this.operators.length) {
+        this.operators.push(operation);
+      }
     }
   };
 
@@ -144,8 +149,7 @@ export default class Expression {
       this.operands[this.operands.length - 1] instanceof Expression
     ) {
       this.operands[this.operands.length - 1].openParenthesis();
-    }
-    else if (this.operands.length === this.operators.length) {
+    } else if (this.operands.length === this.operators.length) {
       let expression = new Expression();
       expression.startParenthesis = true;
       this.operands.push(expression);
@@ -155,16 +159,12 @@ export default class Expression {
   closeParenthesis = () => {
     // Check if last operand is an unfinished expression
     if (
-        this.operands.length > this.operators.length &&
-        this.operands[this.operands.length - 1] instanceof Expression &&
-        !this.operands[this.operands.length - 1].endParenthesis
-      ) {
-        this.operands[this.operands.length - 1].closeParenthesis();
-      }
-    else if (
       this.operands.length > this.operators.length &&
-      this.startParenthesis
+      this.operands[this.operands.length - 1] instanceof Expression &&
+      !this.operands[this.operands.length - 1].endParenthesis
     ) {
+      this.operands[this.operands.length - 1].closeParenthesis();
+    } else if (this.operands.length > this.operators.length && this.startParenthesis) {
       this.endParenthesis = true;
     }
   };
