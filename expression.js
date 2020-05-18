@@ -121,18 +121,18 @@ export default class Expression {
   };
 
   chooseOperation = (operation) => {
+    // Checks if last operand is an Expression that is not closed
+    if (
+      this.operands.length > this.operators.length &&
+      this.operands[this.operands.length - 1] instanceof Expression &&
+      !this.operands[this.operands.length - 1].endParenthesis
+    ) {
+      this.operands[this.operands.length - 1].chooseOperation(operation);
+    }
     // Can only choose operation if there is a valid first operand
-    if (!(this.operands.length > 0 && isNaN(this.operands[0]))) {
-      // Checks if last operand is an Expression that is not closed
-      if (
-        this.operands.length > this.operators.length &&
-        this.operands[this.operands.length - 1] instanceof Expression &&
-        !this.operands[this.operands.length - 1].endParenthesis
-      ) {
-        this.operands[this.operands.length - 1].chooseOperation(operation);
-      }
+    else if (!(this.operands.length > 0 && isNaN(this.operands[0]))) {
       // In order to switch current last operation
-      else if (this.operands.length === this.operators.length) {
+      if (this.operands.length === this.operators.length) {
         this.operators[this.operators.length - 1] = operation;
       }
       // Add new operation
