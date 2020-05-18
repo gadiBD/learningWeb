@@ -52,7 +52,10 @@ export default class Expression {
       this.operands.length > this.operators.length &&
       this.operands[this.operands.length - 1] instanceof Expression
     ) {
-      this.operands[this.operands.length - 1].appendNumber(number);
+      // Only if an unfinished expression
+      if (!this.operands[this.operands.length - 1].endParenthesis) {
+        this.operands[this.operands.length - 1].appendNumber(number);
+      }
     }
     // Add new operand
     else if (this.operands.length === this.operators.length) {
@@ -130,7 +133,10 @@ export default class Expression {
       this.operands[this.operands.length - 1].chooseOperation(operation);
     }
     // Can only choose operation if there is a valid first operand
-    else if (!(this.operands.length > 0 && isNaN(this.operands[0]))) {
+    else if (
+      this.operands.length > 0 &&
+      (!isNaN(this.operands[0]) || this.operands[0] instanceof Expression)
+    ) {
       // In order to switch current last operation
       if (this.operands.length === this.operators.length) {
         this.operators[this.operators.length - 1] = operation;
