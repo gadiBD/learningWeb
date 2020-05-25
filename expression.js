@@ -13,62 +13,25 @@ export default class Expression {
     this.endParenthesis = false;
   };
 
-  delete = () => {
-    // Checks if last operand is an expression
-    if (
-      this.operands.length > this.operators.length &&
+  isLastOperandExpression = () => {
+    return (
+      this.operands.length > 0 &&
       this.operands[this.operands.length - 1] instanceof Expression
-    ) {
-      // When number of operands is 0, delete starting parenthesis and the Expression itself
-      if (this.operands[this.operands.length - 1].operands.length === 0) {
-        this.operands[this.operands.length - 1].startParenthesis = false;
-        this.operands.pop();
-      }
-      // Delete ending parenthesis
-      else if (this.operands[this.operands.length - 1].endParenthesis) {
-        this.operands[this.operands.length - 1].endParenthesis = false;
-      } else {
-        this.operands[this.operands.length - 1].delete();
-      }
-    }
-    // Delete an operator
-    else if (this.operands.length === this.operators.length) {
-      this.operators.pop();
-    } else {
-      // Delete operand
-      if (this.operands[this.operands.length - 1].number.length === 1) {
-        this.operands.pop();
-      }
-      // Delete part of operand
-      else {
-        this.operands[this.operands.length - 1].delete();
-      }
-    }
+    );
   };
 
-  appendNumber = (number) => {
-    // Checks if last operand is an expression
-    if (
-      this.operands.length > this.operators.length &&
-      this.operands[this.operands.length - 1] instanceof Expression
-    ) {
-      // Only if an unfinished expression
-      if (!this.operands[this.operands.length - 1].endParenthesis) {
-        this.operands[this.operands.length - 1].appendNumber(number);
-      }
-    }
-    // Add new operand
-    else if (this.operands.length === this.operators.length) {
-      this.operands.push(new Operand(number));
-    }
-    // Add to exisiting operand
-    else {
-      this.operands[this.operands.length - 1].appendNumber(number);
-    }
+  isLastOperandExpressionUnfinished = () => {
+    return !this.operands[this.operands.length - 1].endParenthesis;
+  };
+
+  isLastMemberAnOperator = () => {
+    return this.operands.length === this.operators.length;
   };
 
   isValid = () => {
-    let isValid = true;
+    // Check if correct number of operands and operators
+    let isValid = this.operands.length > this.operators.length;
+
     // Checks if all interior expressions are valid
     this.operands.forEach((expression, index) => {
       if (expression instanceof Expression) {
@@ -76,8 +39,17 @@ export default class Expression {
         isValid = isValid && expression.startParenthesis && expression.endParenthesis;
       }
     });
-    // Check if correct number of operands and operators
-    return isValid && this.operands.length > this.operators.length;
+
+    return isValid;
+  };
+
+  appendNumber = (number) => {
+    // Add new operand
+    if (this.isLastMemberAnOperator()) {
+      this.operands.push(new Operand(number));
+    } else {
+      this.operands[this.operands.length - 1].appendNumber(number);
+    }
   };
 
   computeCertainOperations = (possibleOperations) => {
@@ -115,7 +87,8 @@ export default class Expression {
       this.operands = [
         new Operand(
           (
-            Math.round((parseFloat(this.operands[0]) + Number.EPSILON) * 100) / 100
+            Math.round((parseFloat(this.operands[0]) + Number.EPSILON) * 1000000) /
+            1000000
           ).toString()
         ),
       ];
@@ -124,12 +97,7 @@ export default class Expression {
   };
 
   chooseOperation = (operation) => {
-    // Checks if last operand is an Expression that is not closed
-    if (
-      this.operands.length > this.operators.length &&
-      this.operands[this.operands.length - 1] instanceof Expression &&
-      !this.operands[this.operands.length - 1].endParenthesis
-    ) {
+    if (this.isLastOperandExpression() && this.isLastOperandExpressionUnfinished()) {
       this.operands[this.operands.length - 1].chooseOperation(operation);
     }
     // Can only choose operation if there is a valid first operand
@@ -137,25 +105,18 @@ export default class Expression {
       this.operands.length > 0 &&
       (!isNaN(this.operands[0]) || this.operands[0] instanceof Expression)
     ) {
-      // In order to switch current last operation
-      if (this.operands.length === this.operators.length) {
+      if (this.isLastOperandExpression()) {
         this.operators[this.operators.length - 1] = operation;
-      }
-      // Add new operation
-      else if (this.operands.length > this.operators.length) {
+      } else if (this.operands.length > this.operators.length) {
         this.operators.push(operation);
       }
     }
   };
 
   openParenthesis = () => {
-    // Checks if last operand is Expression
-    if (
-      this.operands.length > this.operators.length &&
-      this.operands[this.operands.length - 1] instanceof Expression
-    ) {
+    if (this.isLastOperandExpression()) {
       this.operands[this.operands.length - 1].openParenthesis();
-    } else if (this.operands.length === this.operators.length) {
+    } else if (this.isLastOperandExpression()) {
       let expression = new Expression();
       expression.startParenthesis = true;
       this.operands.push(expression);
@@ -163,15 +124,31 @@ export default class Expression {
   };
 
   closeParenthesis = () => {
-    // Check if last operand is an unfinished expression
-    if (
-      this.operands.length > this.operators.length &&
-      this.operands[this.operands.length - 1] instanceof Expression &&
-      !this.operands[this.operands.length - 1].endParenthesis
-    ) {
+    if (this.isLastOperandExpression() && this.isLastOperandExpressionUnfinished()) {
       this.operands[this.operands.length - 1].closeParenthesis();
     } else if (this.operands.length > this.operators.length && this.startParenthesis) {
       this.endParenthesis = true;
+    }
+  };
+
+  delete = () => {
+    if (this.isLastOperandExpression()) {
+      // Delete all of last expression
+      if (this.operands[this.operands.length - 1].operands.length === 0) {
+        this.operands.pop();
+      } 
+      else if (this.operands[this.operands.length - 1].endParenthesis) {
+        this.operands[this.operands.length - 1].endParenthesis = false;
+      } else {
+        this.operands[this.operands.length - 1].delete();
+      }
+    } else if (this.isLastMemberAnOperator()) {
+      this.operators.pop();
+    } else {
+      this.operands[this.operands.length - 1].delete();
+      if (this.operands[this.operands.length - 1].number.length === 0) {
+        this.operands.pop();
+      }
     }
   };
 

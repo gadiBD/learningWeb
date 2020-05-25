@@ -1,9 +1,9 @@
 import Expression from "./expression.js"
 
 export default class Calculator {
-  constructor() {
-    this.displayText = document.getElementById("displayText");
-    this.clear();
+  constructor(displayTextDiv) {
+      this.displayText = displayTextDiv;
+      this.clear();
   }
 
   clear = () => {
@@ -39,6 +39,6 @@ export default class Calculator {
   };
 
   updateDisplay = () => {
-    displayText.innerHTML = this.expression.toString();
+    this.displayText.innerHTML = this.expression.toString();
   };
 }
