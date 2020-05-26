@@ -1,44 +1,88 @@
-import Expression from "./expression.js"
+import Expression from "./expression.js";
+import regexes from "./regexes.js";
+import operations from "./operations.js";
 
 export default class Calculator {
   constructor(displayTextDiv) {
-      this.displayText = displayTextDiv;
-      this.clear();
+    this.displayTextDiv = displayTextDiv;
+    this.unclosedBrackets = 0;
+    this.clear();
   }
 
   clear = () => {
-    this.expression = new Expression();
+    this.displayText = "";
+  };
+
+  getLastChar = () => {
+    return this.displayText.charAt(this.displayText.length - 1);
   };
 
   appendNumber = (number) => {
-    this.expression.appendNumber(number);
+    if (regexes.canInsertNumber.test(this.displayText)) {
+      this.displayText += number;
+    }
+  };
+
+  appendPeriod = (number) => {
+    // if (this.getLastChar() != ")") {
+    this.displayText += number;
+    // }
   };
 
   isValid = () => {
-    this.expression.isValid();
+    return true;
+    // this.expression.isValid();
   };
 
   chooseOperation = (operation) => {
-    this.expression.chooseOperation(operation);
+    this.displayText += operation;
+  };
+
+  parseExpression = (text) => {
+    let expression = new Expression();
+
+    [...text].forEach((ch, index) => {
+      if (!isNaN(ch) || ch === ".") {
+        expression.appendOperand(ch);
+      } else if (operations[ch]) {
+        expression.appendOperation(ch);
+      } else if (ch === "(") {
+        expression.appendOperand(new Expression());
+      } else if (ch === ")") {
+        expression.closeExpression();
+      }
+    });
+    return expression;
   };
 
   compute = () => {
-    this.expression.compute();
+    if (this.isValid()) {
+      let expression = this.parseExpression(this.displayText);
+      this.displayText = expression.compute().toString();
+    }
   };
 
   delete = () => {
-    this.expression.delete();
+    this.displayText = this.displayText.slice(0, -1);
   };
 
   openParenthesis = () => {
-    this.expression.openParenthesis();
+    if (regexes.canOpenBracket.test(this.displayText)) {
+      this.unclosedBrackets++;
+      this.displayText += "(";
+    }
   };
 
   closeParenthesis = () => {
-    this.expression.closeParenthesis();
+    if (regexes.canCloseBracket.test(this.displayText)) {
+      if (this.unclosedBrackets !== 0) {
+        this.unclosedBrackets--;
+        this.displayText += ")";
+      }
+    }
   };
 
   updateDisplay = () => {
-    this.displayText.innerHTML = this.expression.toString();
+    this.displayTextDiv.innerHTML = this.displayText;
   };
 }

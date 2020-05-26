@@ -10,6 +10,11 @@ let pressNumber = (value) => {
   calculator.updateDisplay();
 };
 
+let pressPeriod = (value) => {
+  calculator.appendPeriod(value);
+  calculator.updateDisplay();
+};
+
 let pressOperator = (value) => {
   calculator.chooseOperation(value);
   calculator.updateDisplay();
@@ -57,7 +62,7 @@ let elements = [
   { value: "8", method: pressNumber },
   { value: "9", method: pressNumber },
   { value: "*", method: pressOperator },
-  { value: ".", method: pressNumber },
+  { value: ".", method: pressPeriod },
   { value: "0", method: pressNumber },
   { value: "=", id: "equals", method: equals },
   { value: "/", method: pressOperator },
@@ -72,7 +77,7 @@ let createButtons = (calculator) => {
 
 document.onkeyup = function (event) {
   // TODO: add period
-  if (!isNaN(event.key)) {
+  if (!isNaN(event.key) || event.key === ".") {
     pressNumber(event.key);
   } else if (operations[event.key]) {
     pressOperator(event.key);

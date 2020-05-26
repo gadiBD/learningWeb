@@ -9,48 +9,45 @@ export default class Expression {
   clear = () => {
     this.operands = [];
     this.operators = [];
-    this.startParenthesis = false;
-    this.endParenthesis = false;
+    this.finishedExpression = false;
   };
 
-  isLastOperandExpression = () => {
+  isLastOperandUnfinishedExpression = () => {
     return (
       this.operands.length > 0 &&
-      this.operands[this.operands.length - 1] instanceof Expression
+      this.operands[this.operands.length - 1] instanceof Expression &&
+      !this.operands[this.operands.length - 1].finishedExpression
     );
-  };
-
-  isLastOperandExpressionUnfinished = () => {
-    return !this.operands[this.operands.length - 1].endParenthesis;
   };
 
   isLastMemberAnOperator = () => {
     return this.operands.length === this.operators.length;
   };
 
-  isValid = () => {
-    // Check if correct number of operands and operators
-    let isValid = this.operands.length > this.operators.length;
-
-    // Checks if all interior expressions are valid
-    this.operands.forEach((expression, index) => {
-      if (expression instanceof Expression) {
-        isValid = isValid && expression.isValid();
-        isValid = isValid && expression.startParenthesis && expression.endParenthesis;
-      }
-    });
-
-    return isValid;
-  };
-
-  appendNumber = (number) => {
-    // Add new operand
+  appendOperand = (operand) => {
     if (this.isLastMemberAnOperator()) {
-      this.operands.push(new Operand(number));
+      this.operands.push(operand instanceof Expression ? operand : new Operand(operand));
     } else {
-      this.operands[this.operands.length - 1].appendNumber(number);
+      this.operands[this.operands.length - 1].appendOperand(operand);
     }
   };
+
+  appendOperation = (operation) => {
+    if (this.isLastOperandUnfinishedExpression()) {
+      this.operands[this.operands.length - 1].appendOperation(operation);
+    } else {
+      this.operators.push(operation);
+    }
+  };
+
+
+  closeExpression = () => {
+    if (this.isLastOperandUnfinishedExpression()) {
+      this.operands[this.operands.length - 1].closeExpression()
+    } else {
+      this.finishedExpression = true;
+    }
+  }
 
   computeCertainOperations = (possibleOperations) => {
     let index = this.operators.findIndex((operator) =>
@@ -74,94 +71,27 @@ export default class Expression {
   };
 
   compute = () => {
-    if (this.isValid()) {
-      // First compute all interior expressions and turn them into simple operands
-      this.operands.forEach((expression, index) => {
-        if (expression instanceof Expression) {
-          expression.compute();
-          this.operands[index] = new Operand(expression.operands[0].toString());
-        }
-      });
-      this.computeCertainOperations(["*", "/"]);
-      this.computeCertainOperations(["+", "-"]);
-      this.operands = [
-        new Operand(
-          (
-            Math.round((parseFloat(this.operands[0]) + Number.EPSILON) * 1000000) /
-            1000000
-          ).toString()
-        ),
-      ];
-      this.operators = [];
-    }
-  };
-
-  chooseOperation = (operation) => {
-    if (this.isLastOperandExpression() && this.isLastOperandExpressionUnfinished()) {
-      this.operands[this.operands.length - 1].chooseOperation(operation);
-    }
-    // Can only choose operation if there is a valid first operand
-    else if (
-      this.operands.length > 0 &&
-      (!isNaN(this.operands[0]) || this.operands[0] instanceof Expression)
-    ) {
-      if (this.isLastOperandExpression()) {
-        this.operators[this.operators.length - 1] = operation;
-      } else if (this.operands.length > this.operators.length) {
-        this.operators.push(operation);
+    // First compute all interior expressions and turn them into simple operands
+    this.operands.forEach((expression, index) => {
+      if (expression instanceof Expression) {
+        expression.compute();
+        this.operands[index] = new Operand(expression.operands[0].toString());
       }
-    }
+    });
+    this.computeCertainOperations(["*", "/"]);
+    this.computeCertainOperations(["+", "-"]);
+    return (
+      Math.round((parseFloat(this.operands[0]) + Number.EPSILON) * 1000000) / 1000000
+    );
+    this.operands = [
+      new Operand(
+        (
+          Math.round((parseFloat(this.operands[0]) + Number.EPSILON) * 1000000) / 1000000
+        ).toString()
+      ),
+    ];
+    this.operators = [];
   };
 
-  openParenthesis = () => {
-    if (this.isLastOperandExpression()) {
-      this.operands[this.operands.length - 1].openParenthesis();
-    } else if (this.isLastOperandExpression()) {
-      let expression = new Expression();
-      expression.startParenthesis = true;
-      this.operands.push(expression);
-    }
-  };
-
-  closeParenthesis = () => {
-    if (this.isLastOperandExpression() && this.isLastOperandExpressionUnfinished()) {
-      this.operands[this.operands.length - 1].closeParenthesis();
-    } else if (this.operands.length > this.operators.length && this.startParenthesis) {
-      this.endParenthesis = true;
-    }
-  };
-
-  delete = () => {
-    if (this.isLastOperandExpression()) {
-      // Delete all of last expression
-      if (this.operands[this.operands.length - 1].operands.length === 0) {
-        this.operands.pop();
-      } 
-      else if (this.operands[this.operands.length - 1].endParenthesis) {
-        this.operands[this.operands.length - 1].endParenthesis = false;
-      } else {
-        this.operands[this.operands.length - 1].delete();
-      }
-    } else if (this.isLastMemberAnOperator()) {
-      this.operators.pop();
-    } else {
-      this.operands[this.operands.length - 1].delete();
-      if (this.operands[this.operands.length - 1].number.length === 0) {
-        this.operands.pop();
-      }
-    }
-  };
-
-  toString = () => {
-    let displayResult = this.startParenthesis ? "(" : "";
-    for (let i = 0; i < this.operators.length; i++) {
-      displayResult += this.operands[i];
-      displayResult += this.operators[i];
-    }
-    if (this.operands.length > this.operators.length) {
-      displayResult += this.operands[this.operands.length - 1];
-    }
-    displayResult += this.endParenthesis ? ")" : "";
-    return displayResult;
-  };
+  toString = () => {};
 }
