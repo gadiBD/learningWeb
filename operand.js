@@ -7,7 +7,7 @@ export default class Operand {
     this.number = this.number.toString().slice(0, -1);
   };
 
-  appendNumber = (number) => {
+  appendOperand = (number) => {
     if (isNaN(this.number) && this.number != ".") {
       this.number = number;
     } else if (!(number === "." && this.number.includes("."))) {

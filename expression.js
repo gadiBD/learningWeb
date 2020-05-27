@@ -1,5 +1,6 @@
 import operations from "./operations.js";
 import Operand from "./operand.js";
+import regexes from "./regexes.js";
 
 export default class Expression {
   constructor() {
@@ -26,7 +27,8 @@ export default class Expression {
 
   appendOperand = (operand) => {
     if (this.isLastMemberAnOperator()) {
-      this.operands.push(operand instanceof Expression ? operand : new Operand(operand));
+      operand = operand instanceof Expression ? operand : new Operand(operand);
+      this.operands.push(operand);
     } else {
       this.operands[this.operands.length - 1].appendOperand(operand);
     }
@@ -40,14 +42,13 @@ export default class Expression {
     }
   };
 
-
   closeExpression = () => {
     if (this.isLastOperandUnfinishedExpression()) {
-      this.operands[this.operands.length - 1].closeExpression()
+      this.operands[this.operands.length - 1].closeExpression();
     } else {
       this.finishedExpression = true;
     }
-  }
+  };
 
   computeCertainOperations = (possibleOperations) => {
     let index = this.operators.findIndex((operator) =>
@@ -72,25 +73,31 @@ export default class Expression {
 
   compute = () => {
     // First compute all interior expressions and turn them into simple operands
+    const MAX_NUMBER = 10 ** 18;
     this.operands.forEach((expression, index) => {
       if (expression instanceof Expression) {
-        expression.compute();
-        this.operands[index] = new Operand(expression.operands[0].toString());
+        let result = expression.compute();
+        this.operands[index] = new Operand(result.toString());
       }
     });
     this.computeCertainOperations(["*", "/"]);
     this.computeCertainOperations(["+", "-"]);
-    return (
-      Math.round((parseFloat(this.operands[0]) + Number.EPSILON) * 1000000) / 1000000
-    );
-    this.operands = [
-      new Operand(
-        (
-          Math.round((parseFloat(this.operands[0]) + Number.EPSILON) * 1000000) / 1000000
-        ).toString()
-      ),
-    ];
-    this.operators = [];
+    if (this.operands[0].toString().includes("e+")) {
+      return "Number too big";
+    }
+    else if (this.operands[0].toString().includes("e-")) {
+      return "Number too small";
+    }
+    return this.operands[0];
+  };
+
+  isInRange = (number) => {
+    return number > Number.MIN_SAFE_INTEGER && number < Number.MAX_SAFE_INTEGER;
+  };
+
+  round = (number, digits) => {
+    let exponent = 10 ** digits;
+    return Math.round((number + Number.EPSILON) * exponent) / exponent;
   };
 
   toString = () => {};

@@ -5,13 +5,14 @@ if (operationsString.includes('-')) {
     operationsString = operationsString.replace("-", "\\-");
 }
 
-alert(operationsString);
-
 export default {
     canOpenBracket: /.*(?<!(\)|\d|\.))$/,
     canInsertNumber: /.*(?<!(\)))$/,
-    canCloseBracket: new RegExp(`.+(?<![${operationsString}\()])$`),
-
-
+    canCloseBracket: new RegExp(`.+(?<![${operationsString}\(])$`),
+    canReplaceOperation: new RegExp(`.+([${operationsString}])$`),
+    canInsertOperation: /.+(?<!(\())$/,
+    isValid: new RegExp(`.+(?<![${operationsString}])$`),
+    cannotInsertPeriod: new RegExp(`.*([${operationsString}]*)(\\d*)(\\.{1})(\\d*)$`),
+    deleteExtraZeroes: /0+$|\.0+$/,
 }
 
