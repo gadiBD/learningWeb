@@ -8,7 +8,7 @@ if (operationsString.includes('-')) {
 export default {
     canOpenBracket: /.*(?<!(\)|\d|\.))$/,
     canInsertNumber: /.*(?<!(\)))$/,
-    canCloseBracket: new RegExp(`.+(?<![${operationsString}\(])$`),
+    canCloseBracket: new RegExp(`.+(?<![${operationsString}\(\.])$`),
     canReplaceOperation: new RegExp(`.+([${operationsString}])$`),
     canInsertOperation: /.+(?<!(\())$/,
     isValid: new RegExp(`.+(?<![${operationsString}])$`),

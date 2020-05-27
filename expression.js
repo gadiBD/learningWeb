@@ -88,16 +88,12 @@ export default class Expression {
     else if (this.operands[0].toString().includes("e-")) {
       return "Number too small";
     }
-    return this.operands[0];
-  };
-
-  isInRange = (number) => {
-    return number > Number.MIN_SAFE_INTEGER && number < Number.MAX_SAFE_INTEGER;
+    return this.round(this.operands[0], 6);
   };
 
   round = (number, digits) => {
     let exponent = 10 ** digits;
-    return Math.round((number + Number.EPSILON) * exponent) / exponent;
+    return Math.round((parseFloat(number) + Number.EPSILON) * exponent) / exponent;
   };
 
   toString = () => {};
