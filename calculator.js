@@ -1,6 +1,6 @@
 import Expression from "./expression.js";
 import regexes from "./regexes.js";
-import operations from "./operations.js";
+import OPERATIONS from "./operations.js";
 
 export default class Calculator {
   constructor(displayTextDiv) {
@@ -37,7 +37,6 @@ export default class Calculator {
       this.clear();
     }
     if (!regexes.cannotInsertPeriod.test(this.displayText)) {
-      // Period must also pass number validation
       this.appendNumber(period);
     }
   };
@@ -79,12 +78,12 @@ export default class Calculator {
   };
 
   parseExpression = (text) => {
-    let expression = new Expression();
+    const expression = new Expression();
 
     [...text].forEach((ch, index) => {
       if (!isNaN(ch) || ch === ".") {
         expression.appendOperand(ch);
-      } else if (operations[ch]) {
+      } else if (OPERATIONS[ch]) {
         expression.appendOperation(ch);
       } else if (ch === "(") {
         expression.appendOperand(new Expression());
@@ -97,7 +96,7 @@ export default class Calculator {
 
   compute = () => {
     if (this.isValid()) {
-      let expression = this.parseExpression(this.displayText);
+      const expression = this.parseExpression(this.displayText);
       this.displayText = expression.compute().toString();
     }
   };

@@ -1,6 +1,5 @@
 import operations from "./operations.js";
 import Operand from "./operand.js";
-import regexes from "./regexes.js";
 
 export default class Expression {
   constructor() {
@@ -55,14 +54,12 @@ export default class Expression {
       possibleOperations.includes(operator)
     );
 
-    // While possible operation was found
     while (index != -1) {
       this.operands[index] = operations[this.operators[index]](
         parseFloat(this.operands[index]),
         parseFloat(this.operands[index + 1])
       );
 
-      // Deletes the operand and operator
       this.operands.splice(index + 1, 1);
       this.operators.splice(index, 1);
       index = this.operators.findIndex((operator) =>
@@ -72,11 +69,9 @@ export default class Expression {
   };
 
   compute = () => {
-    // First compute all interior expressions and turn them into simple operands
-    const MAX_NUMBER = 10 ** 18;
     this.operands.forEach((expression, index) => {
       if (expression instanceof Expression) {
-        let result = expression.compute();
+        const result = expression.compute();
         this.operands[index] = new Operand(result.toString());
       }
     });
@@ -88,13 +83,6 @@ export default class Expression {
     else if (this.operands[0].toString().includes("e-")) {
       return "Number too small";
     }
-    return this.round(this.operands[0], 6);
+    return Number(this.operands[0].toFixed(10));
   };
-
-  round = (number, digits) => {
-    let exponent = 10 ** digits;
-    return Math.round((parseFloat(number) + Number.EPSILON) * exponent) / exponent;
-  };
-
-  toString = () => {};
 }

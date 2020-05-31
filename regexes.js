@@ -1,9 +1,7 @@
-import operations from "./operations.js";
+import OPERATIONS from "./operations.js";
 
-let operationsString = Object.keys(operations).join('');
-if (operationsString.includes('-')) {
-    operationsString = operationsString.replace("-", "\\-");
-}
+let operationsString = Object.keys(OPERATIONS).join('');
+operationsString = operationsString.replace("-", "\\-");
 
 export default {
     canOpenBracket: /.*(?<!(\)|\d|\.))$/,

@@ -1,6 +1,6 @@
 import Calculator from "./calculator.js";
 import CalculatorBtn from "./calculatorButton.js";
-import operations from "./operations.js";
+import OPERATIONS from "./operations.js";
 
 const displayTextDiv = document.getElementById("displayText");
 const calculator = new Calculator(displayTextDiv);
@@ -76,23 +76,19 @@ let createButtons = (calculator) => {
 };
 
 document.onkeyup = function (event) {
-  // TODO: add period
   if (!isNaN(event.key) || event.key === ".") {
     pressNumber(event.key);
-  } else if (operations[event.key]) {
+  } else if (OPERATIONS[event.key]) {
     pressOperator(event.key);
   } else if (event.key === "(") {
     openParenthesis();
   } else if (event.key === ")") {
     closeParenthesis();
-  }
-  else if (event.key === "r") {
+  } else if (event.key === "r") {
     clear();
-  }
-  else if (event.key === "Enter") {
+  } else if (event.key === "Enter") {
     equals();
-  }
-  else if (event.key === "Backspace") {
+  } else if (event.key === "Backspace") {
     deleteChar();
   }
 };
