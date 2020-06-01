@@ -1,4 +1,4 @@
-import operations from "../lib/operations.js";
+import OPERATIONS from "../lib/operations.js";
 import Operand from "./operand.js";
 
 export default class Expression {
@@ -10,6 +10,27 @@ export default class Expression {
     this.operands = [];
     this.operators = [];
     this.finishedExpression = false;
+  };
+
+  static checkNegativeNumber = (text, index) => {
+    return text[index] === "-" && (OPERATIONS[text[index-1]] || index===0)
+  }
+
+  static parseExpression = (text) => {
+    const expression = new Expression();
+
+    [...text].forEach((ch, index) => {
+      if (!isNaN(ch) || ch === "." || Expression.checkNegativeNumber(text,index)) {
+        expression.appendOperand(ch);
+      } else if (OPERATIONS[ch]) {
+        expression.appendOperation(ch);
+      } else if (ch === "(") {
+        expression.appendOperand(new Expression());
+      } else if (ch === ")") {
+        expression.closeExpression();
+      }
+    });
+    return expression;
   };
 
   isLastOperandUnfinishedExpression = () => {
@@ -55,7 +76,7 @@ export default class Expression {
     );
 
     while (index != -1) {
-      this.operands[index] = operations[this.operators[index]](
+      this.operands[index] = OPERATIONS[this.operators[index]](
         parseFloat(this.operands[index]),
         parseFloat(this.operands[index + 1])
       );
@@ -69,8 +90,11 @@ export default class Expression {
   };
 
   compute = () => {
+    console.log("Start computing")
+    console.log("Computing all inner Expression")
     this.operands.forEach((expression, index) => {
       if (expression instanceof Expression) {
+        console.log(`Computing: ${expression}`)
         const result = expression.compute();
         this.operands[index] = new Operand(result.toString());
       }
@@ -79,10 +103,23 @@ export default class Expression {
     this.computeCertainOperations(["+", "-"]);
     if (this.operands[0].toString().includes("e+")) {
       return "Number too big";
-    }
-    else if (this.operands[0].toString().includes("e-")) {
+    } else if (this.operands[0].toString().includes("e-")) {
       return "Number too small";
     }
+    console.log(`Result: ${this.operands[0]}`)
     return Number((+this.operands[0]).toFixed(10));
+  };
+
+  toString = () => {
+    let displayResult = "(";
+    for (let i = 0; i < this.operators.length; i++) {
+      displayResult += this.operands[i];
+      displayResult += this.operators[i];
+    }
+    if (this.operands.length > this.operators.length) {
+      displayResult += this.operands[this.operands.length - 1];
+    }
+    displayResult += ")";
+    return displayResult;
   };
 }

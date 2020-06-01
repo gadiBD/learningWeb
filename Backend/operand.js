@@ -5,7 +5,6 @@ export default class Operand {
 
   appendOperand = (number) => {
     this.number = this.number.toString() + number.toString();
-
   };
 
   toString = () => {

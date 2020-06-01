@@ -1,5 +1,4 @@
 import Calculator from "./calculator.js";
-import CalculatorBtn from "./calculatorButton.js";
 import OPERATIONS from "../lib/operations.js";
 
 const displayTextDiv = document.getElementById("displayText");
@@ -68,12 +67,29 @@ const elements = [
   { value: "/", method: pressOperator },
 ];
 
+let createButton = (attributes) => {
+ let element = document.createElement("div");
+  element.setAttribute("class", "button");
+  if (attributes.id) {
+    element.setAttribute("id", attributes.id);
+  }
+  element.innerHTML = attributes.value;
+  element.addEventListener("click", () => {
+    attributes.method(attributes.value);
+    // calculator.updateDisplay();
+  });
+
+  return element;
+};
+
 let createButtons = (calculator) => {
   const calculatorDiv = document.getElementById("calculator");
   elements.forEach((element) => {
-    calculatorDiv.appendChild(new CalculatorBtn(element).element);
+    calculatorDiv.appendChild(createButton(element));
   });
 };
+
+console.log("Generating keyup events")
 
 document.onkeyup = function (event) {
   if (!isNaN(event.key)) {
@@ -94,4 +110,6 @@ document.onkeyup = function (event) {
     deleteChar();
   }
 };
+
+console.log("Generating buttons")
 createButtons();
