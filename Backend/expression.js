@@ -1,4 +1,4 @@
-import operations from "./operations.js";
+import operations from "../lib/operations.js";
 import Operand from "./operand.js";
 
 export default class Expression {
@@ -83,6 +83,6 @@ export default class Expression {
     else if (this.operands[0].toString().includes("e-")) {
       return "Number too small";
     }
-    return Number(this.operands[0].toFixed(10));
+    return Number((+this.operands[0]).toFixed(10));
   };
 }

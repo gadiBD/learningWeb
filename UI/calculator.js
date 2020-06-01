@@ -1,6 +1,6 @@
-import Expression from "./expression.js";
-import regexes from "./regexes.js";
-import OPERATIONS from "./operations.js";
+import Expression from "../Backend/expression.js";
+import calcValidations from "../lib/calcValidation.js";
+import OPERATIONS from "../lib/operations.js";
 
 export default class Calculator {
   constructor(displayTextDiv) {
@@ -27,7 +27,7 @@ export default class Calculator {
     if (this.isDisplayTextInvalid()) {
       this.clear();
     }
-    if (regexes.canInsertNumber.test(this.displayText)) {
+    if (calcValidations.canInsertNumber(this.displayText)) {
       this.displayText += number;
     }
   };
@@ -36,19 +36,19 @@ export default class Calculator {
     if (this.isDisplayTextInvalid()) {
       this.clear();
     }
-    if (!regexes.cannotInsertPeriod.test(this.displayText)) {
+    if (calcValidations.canInsertPeriod(this.displayText)) {
       this.appendNumber(period);
     }
   };
 
   isValid = () => {
-    return regexes.isValid.test(this.displayText) && this.unclosedBrackets === 0;
+    return calcValidations.isValid(this.displayText) && this.unclosedBrackets === 0;
   };
 
   chooseOperation = (operation) => {
     if (!this.isDisplayTextInvalid()) {
-      if (regexes.canInsertOperation.test(this.displayText)) {
-        if (regexes.canReplaceOperation.test(this.displayText)) {
+      if (calcValidations.canInsertOperation(this.displayText)) {
+        if (calcValidations.canReplaceOperation(this.displayText)) {
           this.delete();
         }
         this.displayText += operation;
@@ -60,7 +60,7 @@ export default class Calculator {
     if (this.isDisplayTextInvalid()) {
       this.clear();
     }
-    if (regexes.canOpenBracket.test(this.displayText)) {
+    if (calcValidations.canOpenBracket(this.displayText)) {
       this.unclosedBrackets++;
       this.displayText += "(";
     }
@@ -70,7 +70,7 @@ export default class Calculator {
     if (
       !this.isDisplayTextInvalid() &&
       this.unclosedBrackets !== 0 &&
-      regexes.canCloseBracket.test(this.displayText)
+      calcValidations.canCloseBracket(this.displayText)
     ) {
       this.unclosedBrackets--;
       this.displayText += ")";

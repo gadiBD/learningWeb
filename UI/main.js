@@ -1,6 +1,6 @@
 import Calculator from "./calculator.js";
 import CalculatorBtn from "./calculatorButton.js";
-import OPERATIONS from "./operations.js";
+import OPERATIONS from "../lib/operations.js";
 
 const displayTextDiv = document.getElementById("displayText");
 const calculator = new Calculator(displayTextDiv);
@@ -45,7 +45,7 @@ let closeParenthesis = () => {
   calculator.updateDisplay();
 };
 
-let elements = [
+const elements = [
   { value: "C", method: clear },
   { value: "D", method: deleteChar },
   { value: "(", method: openParenthesis },
@@ -76,8 +76,10 @@ let createButtons = (calculator) => {
 };
 
 document.onkeyup = function (event) {
-  if (!isNaN(event.key) || event.key === ".") {
+  if (!isNaN(event.key)) {
     pressNumber(event.key);
+  } else if (event.key === ".") {
+    pressPeriod(event.key);
   } else if (OPERATIONS[event.key]) {
     pressOperator(event.key);
   } else if (event.key === "(") {
