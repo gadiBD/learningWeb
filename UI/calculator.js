@@ -1,5 +1,6 @@
 import Expression from "../Backend/expression.js";
 import calcValidations from "../lib/calcValidation.js";
+import {isAnErrorMessage} from "../lib/errorMessages.js"
 
 export default class Calculator {
   constructor(displayTextDiv) {
@@ -52,6 +53,7 @@ export default class Calculator {
 
   chooseOperation = (operation) => {
     console.log("Pressed on a operator")
+           
     if (!this.isDisplayTextInvalid()) {
       if (calcValidations.canInsertOperation(this.displayText)) {
         if (calcValidations.canReplaceOperation(this.displayText)) {
@@ -116,8 +118,6 @@ export default class Calculator {
   };
 
   isDisplayTextInvalid = () => {
-    return this.displayText === "NaN" || 
-      this.displayText === "Number too big" || 
-      this.displayText === "Number too small";
+    return isAnErrorMessage(this.displayText);
   };
 }
