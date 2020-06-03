@@ -1,34 +1,83 @@
+html, body {
+  height: 100%;
+}
+
 body {
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-  }
+  padding: 0;
+  margin: 0;
+}
 
-  #message-container {
-    width: 80%;
-    max-width: 1200px;
-  }
+#wrapper {
+  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
 
-  #message-container div {
-    background-color: #CCC;
-    padding: 5px;
-  }
+#chat-container {
+  height: 80%;
+  overflow: scroll;
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #FFFFFF;
+  border: 1px solid black;
+  
+}
 
-  #message-container div:nth-child(2n) {
-    background-color: #FFF;
-  }
+#message-container {
+  width: 100%;
+  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
 
-  #send-container {
-    position: fixed;
-    padding-bottom: 30px;
-    bottom: 0;
-    background-color: white;
-    max-width: 1200px;
-    width: 80%;
-    display: flex;
-  }
+#top-part {
+  flex: 1
+}
 
-  #message-input {
-    flex-grow: 1;
-  }
+#chat-title-container {
+  background-color: #6075FB;
+  flex-basis: 5%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#chat-title {
+  color: white;
+  font-size: 1.5em;
+}
+
+#message-container div {
+  padding: 5px;
+}
+
+.myMessage {
+  background-color: #ECEFFE;
+  align-self: flex-start;
+  color: black;
+  border-radius: 0 10px 10px 0;
+}
+
+.otherMessage {
+  align-self: flex-end;
+  background-color: #6075FB;
+  color: white;
+  border-radius: 10px 0 0 10px;
+}
+
+#send-container {
+  flex-basis: 2%;
+  background-color: white;
+  display: flex;
+}
+
+#message-input {
+  flex-grow: 1;
+}
