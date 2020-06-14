@@ -10,7 +10,7 @@ import {
 
 const chatContainer = document.getElementById("chat-container");
 const messageContainer = document.getElementById("message-container");
-const messageForm = document.getElementById("send-container");
+const sendButton = document.getElementById("send-button");
 const messageInput = document.getElementById("message-input");
 const typingInfo = document.getElementById("typing-info");
 let timeout;
@@ -25,13 +25,19 @@ onNewUser(appendMessage);
 onUserDisconnect(appendMessage);
 onTyping(showTypingMessage);
 
-messageForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const message = messageInput.value;
-  appendMessage(`You: ${message}`, true);
-  emitNewMessage(message);
-  messageInput.value = "";
-});
+function submitMessage() {
+  if (messageInput.value) {
+    const message = messageInput.value;
+    appendMessage(`You: ${message}`, true);
+    emitNewMessage(message);
+    messageInput.value = "";
+  }
+};
+
+sendButton.addEventListener("click", () => {
+  messageInput.value = messageInput.value.trim();
+  submitMessage();
+})
 
 messageInput.addEventListener("keyup", (e) => {
   if (e.key !== "Enter") {
@@ -53,6 +59,7 @@ function appendMessage(message, myMessage) {
   bdi.innerText = message;
   messageContainer.append(messageElement);
   chatContainer.scrollTop = chatContainer.scrollHeight - chatContainer.clientHeight;
+  messageElement.classList.add("horizontalTrasnition");
 }
 
 function typingTimeout() {

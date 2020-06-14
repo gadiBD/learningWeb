@@ -17,10 +17,10 @@
           <div id="typing-info"></div>
           <div id="message-container"></div>
         </div>
-        <form id="send-container" autocomplete="off">
-          <input type="text" id="message-input" />
-          <button type="submit" id="send-button">Send</button>
-        </form>
+        <div id="send-container">
+          <textarea type="textarea" cols="50" rows="4" id="message-input"></textarea>
+          <button id="send-button">Send</button>
+        </div>
       </div>
     </div>
     <script src="http://localhost:3000/socket.io/socket.io.js"></script>
