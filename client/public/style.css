@@ -42,7 +42,7 @@ body {
 #message-container {
   display: flex;
   flex-direction: column;
-  margin-bottom: 5px;
+  margin-top: 2px;
 }
 
 #chat-title-container {
@@ -53,6 +53,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  border-bottom: 0.5px solid black;
 }
 
 #chat-title {
@@ -62,12 +63,12 @@ body {
 }
 
 #message-container div {
-  margin-top:5px;
+  margin: 2px 0;
   padding: 5px;
 }
 
 .myMessage {
-  background-color: #ECEFFE;
+  background-color: #CBD1EE;
   align-self: flex-start;
   color: black;
   border-radius: 0 10px 10px 0;
@@ -81,6 +82,7 @@ body {
 }
 
 #send-container {
+  border-top: 0.5px solid black;
   position: sticky;
   bottom: 0;
   display: flex;
@@ -89,6 +91,7 @@ body {
 #message-input {
   flex: 3;
   outline: none;
+  border: 0;
 }
 
 #send-button {

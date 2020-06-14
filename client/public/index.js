@@ -6,7 +6,7 @@ import {
   onTyping,
   emitNewMessage,
   emitTyping,
-} from "./socketApi.js";
+} from "./api.js";
 
 const chatContainer = document.getElementById("chat-container");
 const messageContainer = document.getElementById("message-container");
