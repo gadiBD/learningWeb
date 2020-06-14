@@ -26,6 +26,7 @@ onUserDisconnect(appendMessage);
 onTyping(showTypingMessage);
 
 function submitMessage() {
+  messageInput.value = messageInput.value.trim();
   if (messageInput.value) {
     const message = messageInput.value;
     appendMessage(`You: ${message}`, true);
@@ -35,19 +36,22 @@ function submitMessage() {
 };
 
 sendButton.addEventListener("click", () => {
-  messageInput.value = messageInput.value.trim();
   submitMessage();
+  clearTimeout(timeout);
+  typingTimeout();
 })
 
-messageInput.addEventListener("keyup", (e) => {
-  if (e.key !== "Enter") {
+messageInput.addEventListener("keydown", (e) => {
+  if(e.key === "Enter" && e.ctrlKey) {
+    submitMessage();
+    clearTimeout(timeout);
+    typingTimeout();
+  }
+  else if (e.key !== "Enter") {
     typing = true;
     emitTyping({ user: name, typing: typing });
     clearTimeout(timeout);
     timeout = setTimeout(typingTimeout, 3000);
-  } else {
-    clearTimeout(timeout);
-    typingTimeout();
   }
 });
 
