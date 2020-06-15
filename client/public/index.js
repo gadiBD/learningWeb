@@ -6,7 +6,7 @@ import {
   onTyping,
   emitNewMessage,
   emitTyping,
-} from "./api.js";
+} from "./chatApi.js";
 
 import messages from "./messages.js";
 
@@ -27,9 +27,9 @@ if (!name) {
 
 appendMyMessage(messages.youJoined);
 emitNewUser(name);
-onNewMessage(appendOtherMessage);
-onNewUser(appendOtherMessage);
-onUserDisconnect(appendOtherMessage);
+onNewMessage(appendOtherMessage, () => messages.otherMessage(data.name, data.message));
+onNewUser(appendOtherMessage, () => messages.otherJoined(name));
+onUserDisconnect(appendOtherMessage, () => messages.otherDisconnected(name));
 onTyping(showTypingMessage);
 
 sendButton.addEventListener("click", () => {
@@ -62,11 +62,11 @@ function submitMessage() {
 }
 
 function appendMyMessage(message) {
-  appendMessage(message, "myMessage")
+  appendMessage(message, "myMessage");
 }
 
 function appendOtherMessage(message) {
-  appendMessage(message, "otherMessage")
+  appendMessage(message, "otherMessage");
 }
 
 function appendMessage(message, messageClass) {
