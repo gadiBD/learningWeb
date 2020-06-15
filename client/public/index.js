@@ -15,8 +15,14 @@ const messageInput = document.getElementById("message-input");
 const typingInfo = document.getElementById("typing-info");
 let timeout;
 let typing = false;
+let name;
 
-const name = prompt("What is your name?");
+if (!window.sessionStorage.getItem("name")) {
+ name = prompt("What is your name?");
+ name =  name ? name : "An unnamed user";
+  window.sessionStorage.setItem("name", name);
+}
+
 appendMessage("You joined", true);
 emitNewUser(name);
 
@@ -33,21 +39,20 @@ function submitMessage() {
     emitNewMessage(message);
     messageInput.value = "";
   }
-};
+}
 
 sendButton.addEventListener("click", () => {
   submitMessage();
   clearTimeout(timeout);
   typingTimeout();
-})
+});
 
 messageInput.addEventListener("keydown", (e) => {
-  if(e.key === "Enter" && e.ctrlKey) {
+  if (e.key === "Enter" && e.ctrlKey) {
     submitMessage();
     clearTimeout(timeout);
     typingTimeout();
-  }
-  else if (e.key !== "Enter") {
+  } else if (e.key !== "Enter") {
     typing = true;
     emitTyping({ user: name, typing: typing });
     clearTimeout(timeout);
