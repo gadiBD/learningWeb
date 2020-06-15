@@ -20,7 +20,7 @@ io.on("connection", (socket) => {
 
   socket.on("typing", (data) => {
     console.log(`${data.user} is ${data.typing ? "" : "not "}typing`)
-    socket.broadcast.emit("typing",  data);
+    socket.broadcast.emit("typing", data);
   });
 
   socket.on("disconnect", () => {

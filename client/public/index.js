@@ -73,7 +73,7 @@ function appendMessage(message, messageClass) {
   const bdi = document.createElement("bdi");
   const messageElement = document.createElement("div");
   messageElement.appendChild(bdi);
-  messageElement.setAttribute("class", messageClass);
+  messageElement.classList.add(messageClass);
   bdi.innerText = message;
   messageContainer.append(messageElement);
   chatContainer.scrollTop = chatContainer.scrollHeight - chatContainer.clientHeight;
