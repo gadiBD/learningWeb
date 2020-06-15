@@ -1,4 +1,5 @@
 const socket = io.connect("http://localhost:3000");
+import messages from "./messages.js";
 
 export function emitNewUser(name) {
   socket.emit("new-user", name);
@@ -6,19 +7,19 @@ export function emitNewUser(name) {
 
 export function onNewMessage(method) {
   socket.on("new-chat-message", (data) => {
-    method(`${data.name}: ${data.message}`,  false);
+    method(messages.otherMessage(data.name, data.message));
   });
 }
 
 export function onNewUser(method) {
   socket.on("user-connected", (name) => {
-    method(`${name} connected`, false);
+    method(messages.otherJoined(name));
   });
 }
 
 export function onUserDisconnect(method) {
   socket.on("user-disconnected", (name) => {
-    method(`${name} disconnected`);
+    method(messages.otherDisconnected(name));
   });
 }
 

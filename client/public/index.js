@@ -8,6 +8,8 @@ import {
   emitTyping,
 } from "./api.js";
 
+import messages from "./messages.js";
+
 const chatContainer = document.getElementById("chat-container");
 const messageContainer = document.getElementById("message-container");
 const sendButton = document.getElementById("send-button");
@@ -18,28 +20,18 @@ let typing = false;
 let name;
 
 if (!window.sessionStorage.getItem("name")) {
- name = prompt("What is your name?");
- name =  name ? name : "An unnamed user";
+  name = prompt(messages.promptName);
+  name = name ? name : messages.defaultName;
   window.sessionStorage.setItem("name", name);
 }
 
-appendMessage("You joined", true);
+appendMyMessage(messages.youJoined);
 emitNewUser(name);
 
-onNewMessage(appendMessage);
-onNewUser(appendMessage);
-onUserDisconnect(appendMessage);
+onNewMessage(appendOtherMessage);
+onNewUser(appendOtherMessage);
+onUserDisconnect(appendOtherMessage);
 onTyping(showTypingMessage);
-
-function submitMessage() {
-  messageInput.value = messageInput.value.trim();
-  if (messageInput.value) {
-    const message = messageInput.value;
-    appendMessage(`You: ${message}`, true);
-    emitNewMessage(message);
-    messageInput.value = "";
-  }
-}
 
 sendButton.addEventListener("click", () => {
   submitMessage();
@@ -60,11 +52,29 @@ messageInput.addEventListener("keydown", (e) => {
   }
 });
 
-function appendMessage(message, myMessage) {
+function submitMessage() {
+  messageInput.value = messageInput.value.trim();
+  if (messageInput.value) {
+    const message = messageInput.value;
+    appendMyMessage(messages.yourMessage(message));
+    emitNewMessage(message);
+    messageInput.value = "";
+  }
+}
+
+function appendMyMessage(message) {
+  appendMessage(message, "myMessage")
+}
+
+function appendOtherMessage(message) {
+  appendMessage(message, "otherMessage")
+}
+
+function appendMessage(message, messageClass) {
   const bdi = document.createElement("bdi");
   const messageElement = document.createElement("div");
   messageElement.appendChild(bdi);
-  messageElement.setAttribute("class", myMessage ? "myMessage" : "otherMessage");
+  messageElement.setAttribute("class", messageClass);
   bdi.innerText = message;
   messageContainer.append(messageElement);
   chatContainer.scrollTop = chatContainer.scrollHeight - chatContainer.clientHeight;
@@ -78,7 +88,7 @@ function typingTimeout() {
 
 function showTypingMessage(data) {
   if (data.typing) {
-    typingInfo.innerHTML = `${data.user} is typing...`;
+    typingInfo.innerHTML = messages.isTyping(data.user);
     typingInfo.style.display = "block";
   } else {
     typingInfo.innerHTML = "";
