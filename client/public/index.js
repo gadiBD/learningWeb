@@ -17,9 +17,9 @@ const messageInput = document.getElementById("message-input");
 const typingInfo = document.getElementById("typing-info");
 let timeout;
 let typing = false;
-let name;
+let name = window.sessionStorage.getItem("name");
 
-if (!window.sessionStorage.getItem("name")) {
+if (!name) {
   name = prompt(messages.promptName);
   name = name ? name : messages.defaultName;
   window.sessionStorage.setItem("name", name);
