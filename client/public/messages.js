@@ -6,7 +6,5 @@ export default {
     otherDisconnected: (name) => `${name} disconnected` ,
     yourMessage: (message) => `You: ${message}`,
     otherMessage: (name, message) => `${name}: ${message}`,
-    isTyping: (user) => `${user} is typing...`,
-
-    
+    isTyping: (user) => `${user} is typing...`,  
 }

@@ -27,7 +27,6 @@ if (!window.sessionStorage.getItem("name")) {
 
 appendMyMessage(messages.youJoined);
 emitNewUser(name);
-
 onNewMessage(appendOtherMessage);
 onNewUser(appendOtherMessage);
 onUserDisconnect(appendOtherMessage);
@@ -44,7 +43,7 @@ messageInput.addEventListener("keydown", (e) => {
     submitMessage();
     clearTimeout(timeout);
     typingTimeout();
-  } else if (e.key !== "Enter") {
+  } else {
     typing = true;
     emitTyping({ user: name, typing: typing });
     clearTimeout(timeout);
