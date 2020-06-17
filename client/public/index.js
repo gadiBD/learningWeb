@@ -6,6 +6,9 @@ import {
   onTyping,
   emitNewMessage,
   emitTyping,
+  onGeneratedName,
+  emitGenerateName,
+  onUsernameTaken,
 } from "./chatApi.js";
 
 import messages from "./messages.js";
@@ -19,18 +22,22 @@ let timeout;
 let typing = false;
 let name = window.sessionStorage.getItem("name");
 
+onNewMessage(appendOtherMessage, (data) => messages.otherMessage(data.name, data.message));
+onNewUser(appendOtherMessage, (name) => messages.otherJoined(name));
+onUserDisconnect(appendOtherMessage, (name) => messages.otherDisconnected(name));
+onTyping(showTypingMessage);
+onGeneratedName(onRecievedName);
+onUsernameTaken(alert, (name) => messages.usernameTaken(name))
+
 if (!name) {
   name = prompt(messages.promptName);
-  name = name ? name : messages.defaultName;
-  window.sessionStorage.setItem("name", name);
+  if (!name) {
+    emitGenerateName()
+  }
+  else {
+    startSession()
+  }
 }
-
-appendMyMessage(messages.youJoined);
-emitNewUser(name);
-onNewMessage(appendOtherMessage, () => messages.otherMessage(data.name, data.message));
-onNewUser(appendOtherMessage, () => messages.otherJoined(name));
-onUserDisconnect(appendOtherMessage, () => messages.otherDisconnected(name));
-onTyping(showTypingMessage);
 
 sendButton.addEventListener("click", () => {
   submitMessage();
@@ -50,6 +57,17 @@ messageInput.addEventListener("keydown", (e) => {
     timeout = setTimeout(typingTimeout, 3000);
   }
 });
+
+function onRecievedName(data) {
+  name = data;
+  startSession()
+}
+
+function startSession() {
+  window.sessionStorage.setItem("name", name);
+  appendMyMessage(messages.youJoined);
+  emitNewUser(name);
+}
 
 function submitMessage() {
   messageInput.value = messageInput.value.trim();
