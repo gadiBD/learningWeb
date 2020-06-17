@@ -18,49 +18,52 @@ const messageContainer = document.getElementById("message-container");
 const sendButton = document.getElementById("send-button");
 const messageInput = document.getElementById("message-input");
 const typingInfo = document.getElementById("typing-info");
-let timeout;
-let typing = false;
-let name = window.sessionStorage.getItem("name");
 
-onNewMessage(appendOtherMessage, (data) => messages.otherMessage(data.name, data.message));
+let timeout;
+let name = window.sessionStorage.getItem("name");
+let finishedTypingTimeout = debounce(typingTimeout, 3000);
+
+onNewMessage(appendOtherMessage, (data) =>
+  messages.otherMessage(data.name, data.message)
+);
 onNewUser(appendOtherMessage, (name) => messages.otherJoined(name));
 onUserDisconnect(appendOtherMessage, (name) => messages.otherDisconnected(name));
 onTyping(showTypingMessage);
 onGeneratedName(onRecievedName);
-onUsernameTaken(alert, (name) => messages.usernameTaken(name))
+onUsernameTaken(alert, (name) => messages.usernameTaken(name));
 
 if (!name) {
   name = prompt(messages.promptName);
   if (!name) {
-    emitGenerateName()
-  }
-  else {
-    startSession()
+    emitGenerateName();
+  } else {
+    startSession();
   }
 }
 
 sendButton.addEventListener("click", () => {
   submitMessage();
-  clearTimeout(timeout);
-  typingTimeout();
+  stopTimer();
 });
 
 messageInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && e.ctrlKey) {
     submitMessage();
-    clearTimeout(timeout);
-    typingTimeout();
+    stopTimer();
   } else {
-    typing = true;
-    emitTyping({ user: name, typing: typing });
-    clearTimeout(timeout);
-    timeout = setTimeout(typingTimeout, 3000);
+    userIsTyping();
+    finishedTypingTimeout();
   }
 });
 
+function stopTimer() {
+  clearTimeout(timeout);
+  typingTimeout();
+}
+
 function onRecievedName(data) {
   name = data;
-  startSession()
+  startSession();
 }
 
 function startSession() {
@@ -98,9 +101,21 @@ function appendMessage(message, messageClass) {
   messageElement.classList.add("horizontalTrasnition");
 }
 
+function debounce(fn, delay) {
+  return function () {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn();
+    }, delay);
+  };
+}
+
 function typingTimeout() {
-  typing = false;
-  emitTyping({ user: name, typing: typing });
+  emitTyping({ user: name, typing: false });
+}
+
+function userIsTyping() {
+  emitTyping({ user: name, typing: true });
 }
 
 function showTypingMessage(data) {
