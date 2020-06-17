@@ -13,4 +13,4 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
-server = app.listen(process.env.PORT || 5000);
+server = app.listen(5000);

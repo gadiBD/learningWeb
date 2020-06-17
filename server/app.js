@@ -1,6 +1,7 @@
 const io = require("socket.io")();
 const PORT = 3000;
 const server = io.listen(PORT);
+
 const users = {};
 const defaultName = "An unnamed user";
 let unnamedUserCounter = 0;
