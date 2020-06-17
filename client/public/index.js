@@ -103,8 +103,8 @@ function appendMessage(message, messageClass) {
 
 function debounce(fn, delay) {
   return function () {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
       fn();
     }, delay);
   };
