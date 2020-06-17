@@ -1,4 +1,5 @@
-const socket = io.connect("http://localhost:3000");
+const serverAdress = "http://localhost:3000"
+const socket = io.connect(serverAdress);
 
 const newUser = "new-user"
 const newMessage = "new-chat-message"
