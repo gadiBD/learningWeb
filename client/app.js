@@ -1,8 +1,6 @@
 const express = require("express");
 const app = express();
-const cors = require("cors", { origin: "*" });
 
-app.use(cors({ origin: "*" }));
 app.use("/", express.static(__dirname + "/public"));
 app.use(
   "/clientSocket",
