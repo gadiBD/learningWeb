@@ -5,11 +5,11 @@ const newUser = "new-user"
 const newMessage = "new-chat-message"
 const userConnect = "user-connected"
 const usernameTaken = "username-taken"
+const connectionSuccessful = "connection-successful"
 const userDisconnect = "user-disconnected"
 const userTyping = "typing"
 const sendMessage = "send-chat-message"
 const generateName = "generate-name"
-const generatedName = "generated-name"
 
 export function emitNewUser(name) {
   socket.emit(newUser, name);
@@ -21,9 +21,9 @@ export function onNewMessage(method, formatter) {
   });
 }
 
-export function onGeneratedName(method) {
-  socket.on(generatedName, (data) => {
-    method(data);
+export function onConnectionSuccessful(method) {
+  socket.on(connectionSuccessful, (name) => {
+    method(name);
   });
 }
 
@@ -33,9 +33,9 @@ export function onNewUser(method, formatter) {
   });
 }
 
-export function onUsernameTaken(method, formatter) {
-  socket.on(usernameTaken, (name) => {
-    method(formatter(name));
+export function onUsernameTaken(method) {
+  socket.on(usernameTaken, () => {
+    method();
   });
 }
 

@@ -3,6 +3,7 @@ const PORT = 3000;
 const server = io.listen(PORT);
 
 const users = {};
+const connectionSuccessful = "connection-successful";
 const defaultName = "An unnamed user";
 let unnamedUserCounter = 0;
 
@@ -10,17 +11,15 @@ io.on("connection", (socket) => {
   socket.on("new-user", (name) => {
     let doesNameExists = Object.values(users).indexOf(name) !== -1;
     if (doesNameExists) {
-      name = generateName();
-      socket.emit("username-taken", name);
+      socket.emit("username-taken");
+    } else {
+      connectUser(name);
     }
-    console.log(`${name} connected`);
-    users[socket.id] = name;
-    socket.broadcast.emit("user-connected", name);
   });
 
   socket.on("generate-name", () => {
     name = generateName();
-    socket.emit("generated-name", name);
+    connectUser(name);
   });
 
   socket.on("send-chat-message", (message) => {
@@ -42,8 +41,15 @@ io.on("connection", (socket) => {
     delete users[socket.id];
   });
 
+  function connectUser(name) {
+    console.log(`${name} connected`);
+    users[socket.id] = name;
+    socket.broadcast.emit("user-connected", name);
+    socket.emit(connectionSuccessful, name);
+  }
+
   function generateName() {
-    let doesNameExists 
+    let doesNameExists;
     do {
       unnamedUserCounter++;
       name = `${defaultName} ${unnamedUserCounter}`;

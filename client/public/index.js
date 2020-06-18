@@ -6,9 +6,9 @@ import {
   onTyping,
   emitNewMessage,
   emitTyping,
-  onGeneratedName,
   emitGenerateName,
   onUsernameTaken,
+  onConnectionSuccessful,
 } from "./chatApi.js";
 
 import messages from "./messages.js";
@@ -29,15 +29,22 @@ onNewMessage(appendOtherMessage, (data) =>
 onNewUser(appendOtherMessage, messages.otherJoined);
 onUserDisconnect(appendOtherMessage, messages.otherDisconnected);
 onTyping(showTypingMessage);
-onGeneratedName(onRecievedName);
-onUsernameTaken(alert, messages.usernameTaken);
+onUsernameTaken(() => {
+  alert("Username was taken");
+  promptName();
+}, messages.usernameTaken);
+onConnectionSuccessful(startSession);
 
 if (!name) {
+  promptName();
+}
+
+function promptName() {
   name = prompt(messages.promptName);
   if (!name) {
     emitGenerateName();
   } else {
-    startSession();
+    emitNewUser(name);
   }
 }
 
@@ -61,15 +68,10 @@ function stopTimer() {
   typingTimeout();
 }
 
-function onRecievedName(data) {
-  name = data;
-  startSession();
-}
-
-function startSession() {
+function startSession(name) {
+  name = name;
   window.sessionStorage.setItem("name", name);
   appendMyMessage(messages.youJoined);
-  emitNewUser(name);
 }
 
 function submitMessage() {
