@@ -26,11 +26,11 @@ let finishedTypingTimeout = debounce(typingTimeout, 3000);
 onNewMessage(appendOtherMessage, (data) =>
   messages.otherMessage(data.name, data.message)
 );
-onNewUser(appendOtherMessage, (name) => messages.otherJoined(name));
-onUserDisconnect(appendOtherMessage, (name) => messages.otherDisconnected(name));
+onNewUser(appendOtherMessage, messages.otherJoined);
+onUserDisconnect(appendOtherMessage, messages.otherDisconnected);
 onTyping(showTypingMessage);
 onGeneratedName(onRecievedName);
-onUsernameTaken(alert, (name) => messages.usernameTaken(name));
+onUsernameTaken(alert, messages.usernameTaken);
 
 if (!name) {
   name = prompt(messages.promptName);
