@@ -24,37 +24,6 @@ const typingInfo = document.getElementById("typing-info");
 let name = window.sessionStorage.getItem("name");
 let finishedTypingTimeout = debounceTimer(typingTimeout, 3000)
 
-onNewMessage(appendOtherMessage, (data) =>
-  messages.otherMessage(data.name, data.message)
-);
-onNewUser(appendOtherMessage, messages.otherJoined);
-onUserDisconnect(appendOtherMessage, messages.otherDisconnected);
-onTyping(showTypingMessage);
-onUsernameTaken(() => {
-  alert(messages.usernameTaken);
-  promptName();
-}, messages.usernameTaken);
-onConnectionSuccessful(startSession);
-
-if (!name) {
-  promptName();
-}
-
-sendButton.addEventListener("click", () => {
-  submitMessage();
-  stopTimer(typingTimeout);
-});
-
-messageInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && e.ctrlKey) {
-    submitMessage();
-    stopTimer(typingTimeout);
-  } else {
-    userIsTyping();
-    finishedTypingTimeout();
-  }
-});
-
 function promptName() {
   name = prompt(messages.promptName);
   if (!name) {
@@ -118,4 +87,35 @@ function showTypingMessage(data) {
     typingInfo.innerHTML = "";
     typingInfo.style.display = "none";
   }
+}
+
+onNewMessage(appendOtherMessage, (data) =>
+  messages.otherMessage(data.name, data.message)
+);
+onNewUser(appendOtherMessage, messages.otherJoined);
+onUserDisconnect(appendOtherMessage, messages.otherDisconnected);
+onTyping(showTypingMessage);
+onUsernameTaken(() => {
+  alert(messages.usernameTaken);
+  promptName();
+}, messages.usernameTaken);
+onConnectionSuccessful(startSession);
+
+sendButton.addEventListener("click", () => {
+  submitMessage();
+  stopTimer(typingTimeout);
+});
+
+messageInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && e.ctrlKey) {
+    submitMessage();
+    stopTimer(typingTimeout);
+  } else {
+    userIsTyping();
+    finishedTypingTimeout();
+  }
+});
+
+if (!name) {
+  promptName();
 }
