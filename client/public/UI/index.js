@@ -9,9 +9,9 @@ import {
   emitGenerateName,
   onUsernameTaken,
   onConnectionSuccessful,
-} from "./chatApi.js";
+} from "../api/chatApi.js";
 
-import messages from "./messages.js";
+import messages from "../lib/messages.js";
 
 const chatContainer = document.getElementById("chat-container");
 const messageContainer = document.getElementById("message-container");
