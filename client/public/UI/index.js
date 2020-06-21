@@ -71,6 +71,7 @@ function appendMessage(message, messageClass) {
 function moveScrollbar() {
   chatContainer.scrollTop = chatContainer.scrollHeight - chatContainer.clientHeight;
 }
+
 function typingTimeout() {
   emitTyping({ user: name, typing: false });
 }
