@@ -30,7 +30,7 @@ onNewUser(appendOtherMessage, messages.otherJoined);
 onUserDisconnect(appendOtherMessage, messages.otherDisconnected);
 onTyping(showTypingMessage);
 onUsernameTaken(() => {
-  alert("Username was taken");
+  alert(messages.usernameTaken);
   promptName();
 }, messages.usernameTaken);
 onConnectionSuccessful(startSession);
