@@ -13,15 +13,16 @@ import {
 
 import messages from "../lib/messages.js";
 
+import {debounceTimer, stopTimer} from "../lib/typingTimeout.js";
+
 const chatContainer = document.getElementById("chat-container");
 const messageContainer = document.getElementById("message-container");
 const sendButton = document.getElementById("send-button");
 const messageInput = document.getElementById("message-input");
 const typingInfo = document.getElementById("typing-info");
 
-let timeout;
 let name = window.sessionStorage.getItem("name");
-let finishedTypingTimeout = debounce(typingTimeout, 3000);
+let finishedTypingTimeout = debounceTimer(typingTimeout, 3000)
 
 onNewMessage(appendOtherMessage, (data) =>
   messages.otherMessage(data.name, data.message)
@@ -39,6 +40,21 @@ if (!name) {
   promptName();
 }
 
+sendButton.addEventListener("click", () => {
+  submitMessage();
+  stopTimer(typingTimeout);
+});
+
+messageInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && e.ctrlKey) {
+    submitMessage();
+    stopTimer(typingTimeout);
+  } else {
+    userIsTyping();
+    finishedTypingTimeout();
+  }
+});
+
 function promptName() {
   name = prompt(messages.promptName);
   if (!name) {
@@ -46,26 +62,6 @@ function promptName() {
   } else {
     emitNewUser(name);
   }
-}
-
-sendButton.addEventListener("click", () => {
-  submitMessage();
-  stopTimer();
-});
-
-messageInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && e.ctrlKey) {
-    submitMessage();
-    stopTimer();
-  } else {
-    userIsTyping();
-    finishedTypingTimeout();
-  }
-});
-
-function stopTimer() {
-  clearTimeout(timeout);
-  typingTimeout();
 }
 
 function startSession(name) {
@@ -99,19 +95,13 @@ function appendMessage(message, messageClass) {
   messageElement.classList.add(messageClass);
   bdi.innerText = message;
   messageContainer.append(messageElement);
-  chatContainer.scrollTop = chatContainer.scrollHeight - chatContainer.clientHeight;
+  moveScrollbar();
   messageElement.classList.add("horizontalTrasnition");
 }
 
-function debounce(fn, delay) {
-  return function () {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      fn();
-    }, delay);
-  };
+function moveScrollbar() {
+  chatContainer.scrollTop = chatContainer.scrollHeight - chatContainer.clientHeight;
 }
-
 function typingTimeout() {
   emitTyping({ user: name, typing: false });
 }
