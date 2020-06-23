@@ -1,18 +1,17 @@
 import {
-  emitNewUser,
   onNewMessage,
   onUserDisconnect,
   onNewUser,
   onTyping,
   emitNewMessage,
   emitTyping,
-  emitGenerateName,
-  onUsernameTaken,
+  emitJoinRoom,
+  onUsernameTaken, 
   onConnectionSuccessful,
 } from "../api/chatApi.js";
 
 import messages from "../lib/messages.js";
-
+import {roomItem, nameItem} from "../lib/sessionStorage.js"
 import {debounceTimer, stopTimer} from "../lib/typingTimeout.js";
 
 const chatContainer = document.getElementById("chat-container");
@@ -21,23 +20,10 @@ const sendButton = document.getElementById("send-button");
 const messageInput = document.getElementById("message-input");
 const typingInfo = document.getElementById("typing-info");
 
-let name = window.sessionStorage.getItem("name");
+let name = window.sessionStorage.getItem(nameItem);
+let room = window.sessionStorage.getItem(roomItem);
+
 let finishedTypingTimeout = debounceTimer(typingTimeout, 3000)
-
-function promptName() {
-  name = prompt(messages.promptName);
-  if (!name) {
-    emitGenerateName();
-  } else {
-    emitNewUser(name);
-  }
-}
-
-function startSession(name) {
-  name = name;
-  window.sessionStorage.setItem("name", name);
-  appendMyMessage(messages.youJoined);
-}
 
 function submitMessage() {
   messageInput.value = messageInput.value.trim();
@@ -96,11 +82,8 @@ onNewMessage(appendOtherMessage, (data) =>
 onNewUser(appendOtherMessage, messages.otherJoined);
 onUserDisconnect(appendOtherMessage, messages.otherDisconnected);
 onTyping(showTypingMessage);
-onUsernameTaken(() => {
-  alert(messages.usernameTaken);
-  promptName();
-}, messages.usernameTaken);
-onConnectionSuccessful(startSession);
+onUsernameTaken(() => { alert(messages.error); window.location.href = "/index.html"})
+onConnectionSuccessful(() => appendMyMessage(messages.youJoined))
 
 sendButton.addEventListener("click", () => {
   submitMessage();
@@ -117,6 +100,6 @@ messageInput.addEventListener("keydown", (e) => {
   }
 });
 
-if (!name) {
-  promptName();
-}
+(function youJoined() {
+  emitJoinRoom(name, room);
+})()

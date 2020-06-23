@@ -1,7 +1,7 @@
 const serverAdress = "http://localhost:3000"
 const socket = io.connect(serverAdress);
 
-const newUser = "new-user"
+const joinRoom = "join-room"
 const newMessage = "new-chat-message"
 const userConnect = "user-connected"
 const usernameTaken = "username-taken"
@@ -9,10 +9,10 @@ const connectionSuccessful = "connection-successful"
 const userDisconnect = "user-disconnected"
 const userTyping = "typing"
 const sendMessage = "send-chat-message"
-const generateName = "generate-name"
+const checkUsername = "check-username"
 
-export function emitNewUser(name) {
-  socket.emit(newUser, name);
+export function emitJoinRoom(name, room) {
+  socket.emit(joinRoom, name, room);
 }
 
 export function onNewMessage(method, formatter) {
@@ -59,6 +59,6 @@ export function emitTyping(data) {
     socket.emit(userTyping, data);
 }
 
-export function emitGenerateName() {
-  socket.emit(generateName);
+export function emitCheckUsername(name) {
+  socket.emit(checkUsername, name);
 }

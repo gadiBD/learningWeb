@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat App</title>
+    <link rel="stylesheet" type="text/css" href="/css/index.css" />
+    <link rel="icon" type="image/png" sizes="16x16" />
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="container">
+        <div id="chat-title-container">
+          <div id="chat-title">Gadi's chat</div>
+        </div>
+        <div id="form">
+          <div class="chat-input">
+            <div class="input-label">User</div>
+            <input
+							type="text"
+							name="username"
+              id="username"
+              class="form-input"
+							placeholder="Enter username..."
+							required
+						/>
+          </div>
+          <div class="chat-input">
+            <div class="input-label">Room</div>
+            <select class="form-input" name="room" id="room">
+							<option value="JavaScript">JavaScript</option>
+							<option value="Python">Python</option>
+							<option value="PHP">PHP</option>
+							<option value="C#">C#</option>
+							<option value="Ruby">Ruby</option>
+							<option value="Java">Java</option>
+						</select>
+          </div>
+          <button id="send-button">Send</button>
+        </div>
+      </div>
+    </div>
+    <script src="/clientSocket/socket.io.js"></script>
+    <script type="module" src="/js/index.js"></script>
+  </body>
+</html>
