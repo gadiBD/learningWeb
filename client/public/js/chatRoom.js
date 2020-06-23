@@ -15,6 +15,7 @@ import {roomItem, nameItem} from "../lib/sessionStorage.js"
 import {debounceTimer, stopTimer} from "../lib/typingTimeout.js";
 
 const chatContainer = document.getElementById("chat-container");
+const chatTitle = document.getElementById("chat-title");
 const messageContainer = document.getElementById("message-container");
 const sendButton = document.getElementById("send-button");
 const messageInput = document.getElementById("message-input");
@@ -102,4 +103,5 @@ messageInput.addEventListener("keydown", (e) => {
 
 (function youJoined() {
   emitJoinRoom(name, room);
+  chatTitle.innerHTML = `Room name: ${room}`
 })()

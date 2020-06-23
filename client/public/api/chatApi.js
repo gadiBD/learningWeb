@@ -22,8 +22,8 @@ export function onNewMessage(method, formatter) {
 }
 
 export function onConnectionSuccessful(method) {
-  socket.on(connectionSuccessful, (name) => {
-    method(name);
+  socket.on(connectionSuccessful, () => {
+    method();
   });
 }
 
@@ -59,6 +59,7 @@ export function emitTyping(data) {
     socket.emit(userTyping, data);
 }
 
-export function emitCheckUsername(name) {
-  socket.emit(checkUsername, name);
+export function emitCheckUsername(name, room) {
+  console.log(room)
+  socket.emit(checkUsername, name, room);
 }

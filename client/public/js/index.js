@@ -1,21 +1,20 @@
 import { emitCheckUsername, onUsernameTaken, onConnectionSuccessful } from "../api/chatApi.js";
 
 import messages from "../lib/messages.js";
+import { roomItem, nameItem } from "../lib/sessionStorage.js";
 
 const sendButton = document.getElementById("send-button");
 const roomInput = document.getElementById("room");
 const usernameInput = document.getElementById("username");
 
-let name = window.sessionStorage.getItem("name");
-
 function validate() {
-  name = usernameInput.value;
-  // TODO: ROOM VALIDATION
+  const name = usernameInput.value;
   return name.trim();
 }
 
-function startSession(name) {
-  window.sessionStorage.setItem("name", name);
+function startSession() {
+  window.sessionStorage.setItem(nameItem, usernameInput.value);
+  window.sessionStorage.setItem(roomItem, roomInput.value);
   window.location.href = "/chatRoom.html";
 }
 
@@ -26,13 +25,11 @@ sendButton.addEventListener("click", () => {
   if (!validate()) {
     alert(messages.enterName);
   } else {
-    emitCheckUsername(usernameInput.value);
+    emitCheckUsername(usernameInput.value, roomInput.value);
   }
 });
 
 (function addValuesToForm() {
-  name = window.sessionStorage.getItem("name");
-  //room = window.sessionStorage.setItem("name", name);
-  // TODO: Add Room: 
-  usernameInput.value = name;
+  usernameInput.value = window.sessionStorage.getItem(nameItem) || "";
+  roomInput.value = window.sessionStorage.getItem(roomItem) || "";
 })();

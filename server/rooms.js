@@ -1,15 +1,21 @@
 const rooms = {
-  room1: {
+  JavaScript: {
+    users: {},
+    messages: [],
+  },
+  Python: {
     users: {},
     messages: [],
   },
 };
 
 function addUserToRoom(id, username, room) {
-  rooms[rooms].username[id] = username;
+  rooms[room].users[id] = username;
 }
 
 function removeUserFromRoom(id, room) {
+  console.log(room)
+  console.log(rooms)
   const users = rooms[room].users;
   delete users[id];
 }
@@ -17,6 +23,13 @@ function removeUserFromRoom(id, room) {
 function doesUsernameExistsInRoom(username, room) {
   const users = rooms[room].users;
   return Object.values(users).indexOf(username) !== -1;
+}
+
+function getRoomByUserId(id) {
+    return Object.keys(rooms).find((room) => {
+        const users = rooms[room].user;
+        return Object.keys(users).indexOf(id) !== -1;
+    })
 }
 
 function getUsername(id, room) {
@@ -48,5 +61,6 @@ module.exports = {
   getAllRooms,
   addMessageToRoom,
   getAllMessagesInRoom,
-  getUsername
+  getUsername,
+  getRoomByUserId,
 };

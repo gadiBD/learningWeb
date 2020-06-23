@@ -19,8 +19,10 @@ const usernameTaken = "username-taken";
 
 io.on("connection", (socket) => {
   console.log("connection");
-
+  let currentUsername;
+  let currentRoom;
   socket.on("check-username", (name, room) => {
+    console.log(`Checking ${name} in room: ${room}`)
     if (doesUsernameExistsInRoom(name, room)) {
       socket.emit(usernameTaken);
     } else {
@@ -29,34 +31,38 @@ io.on("connection", (socket) => {
   });
 
   socket.on("join-room", (name, room) => {
+    console.log(`${name} is joining room: ${room}`)
     if (doesUsernameExistsInRoom(name, room)) {
       socket.emit(usernameTaken);
     } else {
-      console.log(`${getUsername()} connected`);
+      currentUsername = name
+      currentRoom = room;
+      console.log(`${name} connected succefully`);
       addUserToRoom(socket.id, name, room)
+      socket.join(room)
       socket.broadcast.to(room).emit("user-connected", name);
-      socket.emit(connectionSuccessful, name);
+      socket.emit(connectionSuccessful);
     }
   });
 
-  socket.on("send-chat-message", (message, room) => {
-    console.log(`${getUsername()} said "${message}"`);
-    socket.broadcast.emit("new-chat-message", {
+  socket.on("send-chat-message", (message) => {
+    console.log(`${currentUsername} said "${message}" in room ${currentRoom}`);
+    socket.broadcast.to(currentRoom).emit("new-chat-message", {
       message: message,
-      name: getUsername(),
+      name: currentUsername,
     });
   });
 
   socket.on("typing", (data) => {
     console.log(`${data.user} is ${data.typing ? "" : "not "}typing`);
-    socket.broadcast.emit("typing", data);
+    socket.broadcast.to(currentRoom).emit("typing", data);
   });
 
   socket.on("disconnect", () => {
-    if (users[socket.id]) {
-      console.log(`${users[socket.id]} disconnected`);
-      socket.broadcast.emit("user-disconnected", users[socket.id]);
-      delete users[socket.id];
+    if (currentUsername) {
+      console.log(`${currentUsername} disconnected`);
+      socket.broadcast.to(currentRoom).emit("user-disconnected", currentUsername);
+      removeUserFromRoom(socket.id, currentRoom)
     }
   });
 });

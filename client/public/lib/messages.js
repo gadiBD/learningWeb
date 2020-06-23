@@ -9,5 +9,5 @@ export default {
     isTyping: (user) => `${user} is typing...`,  
     usernameTaken: `This username is taken. Please choose a different name`,
     enterName: `You must enter a name`,
-    error: `error`,
+    error: `Error`,
 }
