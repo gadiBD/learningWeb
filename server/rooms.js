@@ -27,6 +27,10 @@ function doesUsernameExistsInRoom(username, room) {
   return Object.values(users).indexOf(username) !== -1;
 }
 
+function doesRoomExists(room) {
+  return Object.keys(rooms).indexOf(room) !== -1;
+}
+
 function getRoomByUserId(id) {
     return Object.keys(rooms).find((room) => {
         const users = rooms[room].user;
@@ -39,7 +43,10 @@ function getUsername(id, room) {
 }
 
 function addRoom(room) {
-  rooms[room] = {};
+  rooms[room] = {
+    users: {},
+    messages: [],
+  }
 }
 
 function getAllRooms() {
@@ -77,5 +84,6 @@ module.exports = {
   addRegularMessageToRoom,
   getAllMessagesInRoom,
   getUsername,
+  doesRoomExists,
   getRoomByUserId,
 };

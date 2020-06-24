@@ -16,33 +16,29 @@
         <div id="form">
           <div class="chat-input">
             <div class="input-label">Choose a username</div>
+
             <input
-							type="text"
-							name="username"
+              type="text"
+              name="username"
               id="username"
               class="form-input"
-							placeholder="Enter username..."
-						/>
+              placeholder="Enter username..."
+            />
           </div>
           <div class="chat-input">
-            <div class="input-label">Create new room</div>
+            <div id="room-header" class="input-label">
+              <div id="room-label">Create new room</div>
+              <button id="room-button" id="send-button">Choose from existing room</button>
+            </div>
             <input
-							type="text"
+              type="text"
               id="new-room"
               class="form-input"
-							placeholder="Enter roomname..."
-						/>
-          </div>
-          <div class="chat-input">
-            <div class="input-label">Add existing room</div>
-            <select class="form-input" name="room" id="room">
-							<option default value="JavaScript">JavaScript</option>
-							<option value="Python">Python</option>
-							<option value="PHP">PHP</option>
-							<option value="C#">C#</option>
-							<option value="Ruby">Ruby</option>
-							<option value="Java">Java</option>
-						</select>
+              placeholder="Enter roomname..."
+            />
+            <select style="display: none;" class="form-input" name="room" id="room-select">
+              <option default value="-1">Choose room:</option>
+            </select>
           </div>
           <button id="send-button">Send</button>
         </div>
