@@ -5,48 +5,51 @@ const {
   doesUsernameExistsInRoom,
   addRoom,
   getAllRooms,
-  addMessageToRoom,
+  addConnectedMessageToRoom,
+  addDisconnectedMessageToRoom,
+  addRegularMessageToRoom,
   getAllMessagesInRoom,
-  getUsername
+  getUsername,
+  getRoomByUserId,
 } = require("./rooms");
 
-const io = require("socket.io")();
+const app = require("http").createServer()
+const io = require("socket.io")(app);
 const PORT = 3000;
-const server = io.listen(PORT);
-
-const connectionSuccessful = "connection-successful";
-const usernameTaken = "username-taken";
+app.listen(PORT);
 
 io.on("connection", (socket) => {
   console.log("connection");
   let currentUsername;
   let currentRoom;
   socket.on("check-username", (name, room) => {
-    console.log(`Checking ${name} in room: ${room}`)
-    if (doesUsernameExistsInRoom(name, room)) {
-      socket.emit(usernameTaken);
-    } else {
-      socket.emit(connectionSuccessful, name);
-    }
+    console.log(`Checking ${name} in room: ${room}`);
+    let isUsernameTaken = doesUsernameExistsInRoom(name, room);
+    socket.emit("username-status", isUsernameTaken);
   });
 
   socket.on("join-room", (name, room) => {
-    console.log(`${name} is joining room: ${room}`)
+    console.log(`${name} is joining room: ${room}`);
     if (doesUsernameExistsInRoom(name, room)) {
-      socket.emit(usernameTaken);
+      socket.emit("username-taken");
     } else {
-      currentUsername = name
+      currentUsername = name;
       currentRoom = room;
-      console.log(`${name} connected succefully`);
-      addUserToRoom(socket.id, name, room)
-      socket.join(room)
+
+      socket.join(room);
       socket.broadcast.to(room).emit("user-connected", name);
-      socket.emit(connectionSuccessful);
+      socket.emit("connection-successful", getAllMessagesInRoom(room));
+
+      addUserToRoom(socket.id, name, room);
+      addConnectedMessageToRoom(name, room);
+
+      console.log(`${name} connected succefully`);
     }
   });
 
   socket.on("send-chat-message", (message) => {
     console.log(`${currentUsername} said "${message}" in room ${currentRoom}`);
+    addRegularMessageToRoom(currentUsername, message, currentRoom);
     socket.broadcast.to(currentRoom).emit("new-chat-message", {
       message: message,
       name: currentUsername,
@@ -61,8 +64,9 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     if (currentUsername) {
       console.log(`${currentUsername} disconnected`);
+      addDisconnectedMessageToRoom(currentUsername, currentRoom);
       socket.broadcast.to(currentRoom).emit("user-disconnected", currentUsername);
-      removeUserFromRoom(socket.id, currentRoom)
+      removeUserFromRoom(socket.id, currentRoom);
     }
   });
 });

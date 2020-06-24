@@ -10,6 +10,7 @@ const userDisconnect = "user-disconnected"
 const userTyping = "typing"
 const sendMessage = "send-chat-message"
 const checkUsername = "check-username"
+const usernameStatus = "username-status"
 
 export function emitJoinRoom(name, room) {
   socket.emit(joinRoom, name, room);
@@ -22,8 +23,8 @@ export function onNewMessage(method, formatter) {
 }
 
 export function onConnectionSuccessful(method) {
-  socket.on(connectionSuccessful, () => {
-    method();
+  socket.on(connectionSuccessful, (messages) => {
+    method(messages);
   });
 }
 
@@ -36,6 +37,11 @@ export function onNewUser(method, formatter) {
 export function onUsernameTaken(method) {
   socket.on(usernameTaken, () => {
     method();
+  });
+}
+export function onUsernameStatus(method) {
+  socket.on(usernameStatus, (isUsernameTaken) => {
+    method(isUsernameTaken);
   });
 }
 

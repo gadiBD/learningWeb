@@ -1,4 +1,9 @@
-import { emitCheckUsername, onUsernameTaken, onConnectionSuccessful } from "../api/chatApi.js";
+import {
+  emitCheckUsername,
+  onUsernameTaken,
+  onConnectionSuccessful,
+  onUsernameStatus,
+} from "../api/chatApi.js";
 
 import messages from "../lib/messages.js";
 import { roomItem, nameItem } from "../lib/sessionStorage.js";
@@ -18,8 +23,16 @@ function startSession() {
   window.location.href = "/chatRoom.html";
 }
 
-onUsernameTaken(() => alert(messages.usernameTaken));
-onConnectionSuccessful(startSession);
+function handleUsernameStatus(isUsernameTaken) {
+  if (isUsernameTaken) {
+    alert(messages.usernameTaken)
+  }
+  else {
+    startSession()
+  }
+}
+
+onUsernameStatus(handleUsernameStatus);
 
 sendButton.addEventListener("click", () => {
   if (!validate()) {
@@ -30,6 +43,12 @@ sendButton.addEventListener("click", () => {
 });
 
 (function addValuesToForm() {
-  usernameInput.value = window.sessionStorage.getItem(nameItem) || "";
-  roomInput.value = window.sessionStorage.getItem(roomItem) || "";
+  let name = window.sessionStorage.getItem(nameItem);
+  if (name) {
+    usernameInput.value = name;
+  }
+  let room = window.sessionStorage.getItem(roomItem)
+  if (room) {
+    roomInput.value = room;
+  }
 })();

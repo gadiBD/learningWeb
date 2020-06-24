@@ -6,13 +6,14 @@ import {
   emitNewMessage,
   emitTyping,
   emitJoinRoom,
-  onUsernameTaken, 
+  onUsernameTaken,
   onConnectionSuccessful,
 } from "../api/chatApi.js";
 
-import messages from "../lib/messages.js";
-import {roomItem, nameItem} from "../lib/sessionStorage.js"
-import {debounceTimer, stopTimer} from "../lib/typingTimeout.js";
+import { DISCONNECTED, CONNECTED } from "../lib/messageType.js";
+import messagesFormatter from "../lib/messages.js";
+import { roomItem, nameItem } from "../lib/sessionStorage.js";
+import { debounceTimer, stopTimer } from "../lib/typingTimeout.js";
 
 const chatContainer = document.getElementById("chat-container");
 const chatTitle = document.getElementById("chat-title");
@@ -24,13 +25,13 @@ const typingInfo = document.getElementById("typing-info");
 let name = window.sessionStorage.getItem(nameItem);
 let room = window.sessionStorage.getItem(roomItem);
 
-let finishedTypingTimeout = debounceTimer(typingTimeout, 3000)
+let finishedTypingTimeout = debounceTimer(typingTimeout, 3000);
 
 function submitMessage() {
   messageInput.value = messageInput.value.trim();
   if (messageInput.value) {
     const message = messageInput.value;
-    appendMyMessage(messages.yourMessage(message));
+    appendMyMessage(messagesFormatter.yourMessage(message));
     emitNewMessage(message);
     messageInput.value = "";
   }
@@ -69,7 +70,7 @@ function userIsTyping() {
 
 function showTypingMessage(data) {
   if (data.typing) {
-    typingInfo.innerHTML = messages.isTyping(data.user);
+    typingInfo.innerHTML = messagesFormatter.isTyping(data.user);
     typingInfo.style.display = "block";
   } else {
     typingInfo.innerHTML = "";
@@ -77,14 +78,34 @@ function showTypingMessage(data) {
   }
 }
 
+function showAllPreviousMessages(messages) {
+  messages.forEach((element) => {
+    if (element.type === DISCONNECTED) {
+      appendOtherMessage(messagesFormatter.otherDisconnected(element.sender));
+    } else if (element.type === CONNECTED) {
+      appendOtherMessage(messagesFormatter.otherJoined(element.sender));
+    } else {
+      appendOtherMessage(messagesFormatter.otherMessage(element.sender, element.message));
+    }
+  });
+}
+
+function startSession(messages) {
+  showAllPreviousMessages(messages)
+  appendMyMessage(messagesFormatter.youJoined)
+}
+
 onNewMessage(appendOtherMessage, (data) =>
-  messages.otherMessage(data.name, data.message)
+messagesFormatter.otherMessage(data.name, data.message)
 );
-onNewUser(appendOtherMessage, messages.otherJoined);
-onUserDisconnect(appendOtherMessage, messages.otherDisconnected);
+onNewUser(appendOtherMessage, messagesFormatter.otherJoined);
+onUserDisconnect(appendOtherMessage, messagesFormatter.otherDisconnected);
 onTyping(showTypingMessage);
-onUsernameTaken(() => { alert(messages.error); window.location.href = "/index.html"})
-onConnectionSuccessful(() => appendMyMessage(messages.youJoined))
+onUsernameTaken(() => {
+  alert(messagesFormatter.error);
+  window.location.href = "/index.html";
+});
+onConnectionSuccessful(startSession);
 
 sendButton.addEventListener("click", () => {
   submitMessage();
@@ -103,5 +124,5 @@ messageInput.addEventListener("keydown", (e) => {
 
 (function youJoined() {
   emitJoinRoom(name, room);
-  chatTitle.innerHTML = `Room name: ${room}`
-})()
+  chatTitle.innerHTML = `Room name: ${room}`;
+})();

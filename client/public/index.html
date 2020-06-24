@@ -15,20 +15,28 @@
         </div>
         <div id="form">
           <div class="chat-input">
-            <div class="input-label">User</div>
+            <div class="input-label">Choose a username</div>
             <input
 							type="text"
 							name="username"
               id="username"
               class="form-input"
 							placeholder="Enter username..."
-							required
 						/>
           </div>
           <div class="chat-input">
-            <div class="input-label">Room</div>
+            <div class="input-label">Create new room</div>
+            <input
+							type="text"
+              id="new-room"
+              class="form-input"
+							placeholder="Enter roomname..."
+						/>
+          </div>
+          <div class="chat-input">
+            <div class="input-label">Add existing room</div>
             <select class="form-input" name="room" id="room">
-							<option value="JavaScript">JavaScript</option>
+							<option default value="JavaScript">JavaScript</option>
 							<option value="Python">Python</option>
 							<option value="PHP">PHP</option>
 							<option value="C#">C#</option>

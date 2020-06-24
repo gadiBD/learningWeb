@@ -1,3 +1,5 @@
+const { DISCONNECTED, CONNECTED, REGULAR } = require("./messageType");
+
 const rooms = {
   JavaScript: {
     users: {},
@@ -44,8 +46,19 @@ function getAllRooms() {
   return Object.keys(rooms);
 }
 
-function addMessageToRoom(sender, message, room) {
-  rooms[room].messages.push({ sender: sender, message: messge });
+function addConnectedMessageToRoom(sender, room) {
+  addMessageToRoom(sender, "", CONNECTED, room)
+}
+
+function addDisconnectedMessageToRoom(sender, room) {
+  addMessageToRoom(sender, "", DISCONNECTED, room)
+}
+
+function addRegularMessageToRoom(sender, message, room) {
+  addMessageToRoom(sender, message,  REGULAR, room)}
+
+function addMessageToRoom(sender, message, messageType, room) {
+  rooms[room].messages.push({ sender: sender, message: message, type: messageType });
 }
 
 function getAllMessagesInRoom(room) {
@@ -59,7 +72,9 @@ module.exports = {
   doesUsernameExistsInRoom,
   addRoom,
   getAllRooms,
-  addMessageToRoom,
+  addConnectedMessageToRoom,
+  addDisconnectedMessageToRoom,
+  addRegularMessageToRoom,
   getAllMessagesInRoom,
   getUsername,
   getRoomByUserId,
