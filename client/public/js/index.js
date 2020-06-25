@@ -12,7 +12,8 @@ const sendButton = document.getElementById("send-button");
 const roomLabel = document.getElementById("room-label");
 const roomTextbox = document.getElementById("new-room");
 const roomSelect = document.getElementById("room-select");
-const roomButton = document.getElementById("room-button");
+const newRoomButton = document.getElementById("new-room-button");
+const existingRoomButton = document.getElementById("existing-room-button");
 const usernameInput = document.getElementById("username");
 let isNewRoomInput = false;
 
@@ -45,18 +46,20 @@ function handleLoginStatus(isUsernameTaken) {
   }
 }
 
-function toggleRoomInput() {
-  if (isNewRoomInput) {
-    roomLabel.innerHTML = "Choose an existing room"
-    roomTextbox.style.display = "none"
-    roomSelect.style.display = "block"
-  }
-  else {
-    roomLabel.innerHTML = "Create new room"
+function chooseNewRoomInput() {
+  if (!isNewRoomInput) {
     roomTextbox.style.display = "block"
     roomSelect.style.display = "none"
   }
-  isNewRoomInput = !isNewRoomInput;
+  isNewRoomInput = true;
+}
+
+function chooseExistingRoomInput() {
+  if (isNewRoomInput) {
+    roomTextbox.style.display = "none"
+    roomSelect.style.display = "block"
+  }
+  isNewRoomInput = false;
 }
 
 function addValuesToForm() {
@@ -92,8 +95,9 @@ sendButton.addEventListener("click", () => {
   }
 });
 
-roomButton.addEventListener("click", toggleRoomInput);
+existingRoomButton.addEventListener("click", chooseExistingRoomInput);
+newRoomButton.addEventListener("click", chooseNewRoomInput);
 
 emitGetRooms();
-toggleRoomInput();
+chooseNewRoomInput();
 addValuesToForm();

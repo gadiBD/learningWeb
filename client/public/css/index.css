@@ -104,8 +104,9 @@ body {
   border-radius: 10px;
 }
 
-#room-button {  
+.room-button {  
   flex-basis: 40%;
+  align-self: stretch;
   outline: none;
   background-color: #6075fb;
   border: none;

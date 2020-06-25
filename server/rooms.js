@@ -7,8 +7,6 @@ function addUserToRoom(id, username, room) {
 }
 
 function removeUserFromRoom(id, room) {
-  console.log(room)
-  console.log(rooms)
   const users = rooms[room].users;
   delete users[id];
 }
