@@ -11,8 +11,11 @@ const getAllRooms = "get-all-rooms"
 const userDisconnect = "user-disconnected"
 const userTyping = "typing"
 const sendMessage = "send-chat-message"
-const checkLogin = "check-login"
+const createRoom = "create-room"
+const loginCheck = "login-check"
 const loginStatus = "login-status"
+const roomStatus = "room-status"
+const newRoom = "new-room"
 
 export function emitJoinRoom(name, room) {
   socket.emit(joinRoom, name, room);
@@ -47,6 +50,12 @@ export function onLoginStatus(method) {
   });
 }
 
+export function onRoomStatus(method) {
+  socket.on(roomStatus, (data) => {
+    method(data);
+  });
+}
+
 export function onUserDisconnect(method, formatter) {
   socket.on(userDisconnect, (name) => {
     method(formatter(name));
@@ -67,8 +76,12 @@ export function emitTyping(data) {
     socket.emit(userTyping, data);
 }
 
-export function emitCheckLogin(name, room) {
-  socket.emit(checkLogin, name, room);
+export function emitCreateRoom(room) {
+  socket.emit(createRoom, room);
+}
+
+export function emitLoginCheck(name, room) {
+  socket.emit(loginCheck, name, room);
 }
 
 export function emitGetRooms() {
@@ -78,5 +91,11 @@ export function emitGetRooms() {
 export function onAllRooms(method) {
   socket.on(allRooms, (rooms) => {
     method(rooms);
+  });
+}
+
+export function onNewRoom(method) {
+  socket.on(newRoom, (room) => {
+    method(room);
   });
 }

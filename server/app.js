@@ -20,13 +20,42 @@ io.on("connection", (socket) => {
   let currentUsername;
   let currentRoom;
 
-  socket.on("check-login", (name, room) => {
+  socket.on("create-room", (room) => {
+    console.log(`Checking room: ${room}`);
+    let doesRoomExist = doesRoomExists(room);
+
+    socket.emit("room-status", {
+      doesRoomExist: doesRoomExist,
+      room: room,
+    });
+    
+    if (!doesRoomExist) {
+      addRoom(room);
+      socket.broadcast.emit("new-room", room);
+    }
+  });
+
+  socket.on("login-check", (name, room) => {
     console.log(`Checking ${name} in room: ${room}`);
     let isUsernameTaken = false;
-    if (doesRoomExists(room)) {
+    let isRoomTaken = doesRoomExists(room);
+    if (isRoomTaken) {
       isUsernameTaken = doesUsernameExistsInRoom(name, room);
     }
     socket.emit("login-status", isUsernameTaken);
+  });
+
+  socket.on("check-login", (name, room) => {
+    console.log(`Checking ${name} in room: ${room}`);
+    let isUsernameTaken = false;
+    let isRoomTaken = doesRoomExists(room);
+    if (isRoomTaken) {
+      isUsernameTaken = doesUsernameExistsInRoom(name, room);
+    }
+    socket.emit("login-status", {
+      isUsernameTaken: isUsernameTaken,
+      isRoomTaken: isRoomTaken,
+    });
   });
 
   socket.on("get-all-rooms", () => {
@@ -36,7 +65,6 @@ io.on("connection", (socket) => {
 
   socket.on("join-room", (name, room) => {
     if (!doesRoomExists(room)) {
-      addRoom(room);
       console.log(`${name} is creating room: ${room}`);
     }
     if (doesUsernameExistsInRoom(name, room)) {
@@ -64,7 +92,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("typing", (data) => {
-    console.log(`${data.user} is ${data.typing ? "" : "not "}typing in room ${currentRoom}`);
+    console.log(
+      `${data.user} is ${data.typing ? "" : "not "}typing in room ${currentRoom}`
+    );
     socket.broadcast.to(currentRoom).emit("typing", data);
   });
 

@@ -1,65 +1,55 @@
 import {
-  emitCheckLogin,
+  emitLoginCheck,
   onLoginStatus,
   emitGetRooms,
   onAllRooms,
+  onNewRoom,
+  onRoomStatus,
+  emitCreateRoom
 } from "../api/chatApi.js";
 
 import messages from "../lib/messages.js";
 import { roomItem, nameItem } from "../lib/sessionStorage.js";
 
 const sendButton = document.getElementById("send-button");
-const roomLabel = document.getElementById("room-label");
-const roomTextbox = document.getElementById("new-room");
+const roomTextbox = document.getElementById("new-room-input");
 const roomSelect = document.getElementById("room-select");
 const newRoomButton = document.getElementById("new-room-button");
-const existingRoomButton = document.getElementById("existing-room-button");
 const usernameInput = document.getElementById("username");
-let isNewRoomInput = false;
 
 function validateName() {
-  const name = usernameInput.value;
-  return name.trim();
+  return usernameInput.value.trim();
 }
 
-function validateRoom() {
-  if (isNewRoomInput){
-    return roomTextbox.value.trim();
-  }
-  else {
-    return roomSelect.value !== "-1";
-  }
+function validateRoomSelect() {
+  return roomSelect.value !== "-1";
+}
+
+function validateRoomTextbox() {
+  return roomTextbox.value.trim();
 }
 
 function startSession() {
   window.sessionStorage.setItem(nameItem, usernameInput.value);
-  window.sessionStorage.setItem(roomItem, isNewRoomInput ? roomTextbox.value : roomSelect.value);
+  window.sessionStorage.setItem(roomItem, roomSelect.value);
   window.location.href = "/chatRoom.html";
+}
+
+function handleRoomStatus(data) {
+  if (data.doesRoomExist) {
+    alert(messages.roomTaken);
+  } else {
+    addRoomToSelect(data.room)
+    roomSelect.value = data.room;
+  }
 }
 
 function handleLoginStatus(isUsernameTaken) {
   if (isUsernameTaken) {
-    alert(messages.usernameTaken)
+    alert(messages.roomTaken);
+  } else {
+    startSession();
   }
-  else {
-    startSession()
-  }
-}
-
-function chooseNewRoomInput() {
-  if (!isNewRoomInput) {
-    roomTextbox.style.display = "block"
-    roomSelect.style.display = "none"
-  }
-  isNewRoomInput = true;
-}
-
-function chooseExistingRoomInput() {
-  if (isNewRoomInput) {
-    roomTextbox.style.display = "none"
-    roomSelect.style.display = "block"
-  }
-  isNewRoomInput = false;
 }
 
 function addValuesToForm() {
@@ -67,37 +57,42 @@ function addValuesToForm() {
   if (name) {
     usernameInput.value = name;
   }
-  let room = window.sessionStorage.getItem(roomItem)
+  let room = window.sessionStorage.getItem(roomItem);
   if (room) {
     roomSelect.value = room;
     roomTextbox.value = room;
   }
-};
+}
 
 function addRoomsToSelect(rooms) {
-  rooms.forEach((room) => {
-    let option = document.createElement("option");
-    option.value = room;
-    option.innerHTML = room;
-    roomSelect.appendChild(option);
-  })
+  rooms.forEach(addRoomToSelect);
+}
+
+function addRoomToSelect(room) {
+  let option = document.createElement("option");
+  option.value = room;
+  option.innerHTML = room;
+  roomSelect.appendChild(option);
 }
 
 onLoginStatus(handleLoginStatus);
-onAllRooms(addRoomsToSelect)
+onRoomStatus(handleRoomStatus);
+onAllRooms(addRoomsToSelect);
+onNewRoom(addRoomToSelect);
 
 sendButton.addEventListener("click", () => {
-  if (validateName() && validateRoom()) {
-    let room = isNewRoomInput ? roomTextbox.value : roomSelect.value
-    emitCheckLogin(usernameInput.value, room);
+  if (validateName() && validateRoomSelect()) {
+    emitLoginCheck(usernameInput.value, roomSelect.value);
   } else {
     alert(messages.validationError);
   }
 });
 
-existingRoomButton.addEventListener("click", chooseExistingRoomInput);
-newRoomButton.addEventListener("click", chooseNewRoomInput);
+newRoomButton.addEventListener("click", () => {
+  if (validateRoomTextbox()) {
+    emitCreateRoom(roomTextbox.value);
+  }
+});
 
 emitGetRooms();
-chooseNewRoomInput();
 addValuesToForm();

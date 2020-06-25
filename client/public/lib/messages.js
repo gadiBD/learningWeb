@@ -8,6 +8,7 @@ export default {
     otherMessage: (name, message) => `${name}: ${message}`,
     isTyping: (user) => `${user} is typing...`,  
     usernameTaken: `This username is taken. Please choose a different name`,
+    roomTaken: `This room already exists. Choose the room from the list instead.`,
     validationError: `Please make sure you have entered a name and a room`,
     error: `Error`,
 }

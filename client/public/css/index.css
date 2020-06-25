@@ -26,7 +26,7 @@ body {
 #container {
   margin-top: 5%;
   display: flex;
-  height: 50%;
+  height: 60%;
   width: 40%;
   flex-direction: column;
   justify-content: space-between;
@@ -70,7 +70,7 @@ body {
 }
 
 .chat-input {
-  flex-basis: 35%;
+  flex-basis: 25%;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -105,8 +105,7 @@ body {
 }
 
 .room-button {  
-  flex-basis: 40%;
-  align-self: stretch;
+  flex-basis: 35%;
   outline: none;
   background-color: #6075fb;
   border: none;
@@ -117,9 +116,22 @@ body {
   border-radius: 10px;
 }
 
-#room-header {
+#new-room-input-line {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  flex-basis: 40%;
+  width: 100%;
+  align-items: stretch;
 }
+
+#new-room-input {
+  flex-basis: 60%;
+  border: 0.5px solid black;
+  padding: 0 3px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  outline: none;
+}
+
