@@ -1,15 +1,6 @@
 const { DISCONNECTED, CONNECTED, REGULAR } = require("./messageType");
 
-const rooms = {
-  JavaScript: {
-    users: {},
-    messages: [],
-  },
-  Python: {
-    users: {},
-    messages: [],
-  },
-};
+const rooms = {};
 
 function addUserToRoom(id, username, room) {
   rooms[room].users[id] = username;
@@ -29,17 +20,6 @@ function doesUsernameExistsInRoom(username, room) {
 
 function doesRoomExists(room) {
   return Object.keys(rooms).indexOf(room) !== -1;
-}
-
-function getRoomByUserId(id) {
-    return Object.keys(rooms).find((room) => {
-        const users = rooms[room].user;
-        return Object.keys(users).indexOf(id) !== -1;
-    })
-}
-
-function getUsername(id, room) {
-    return rooms[room].users[id];
 }
 
 function addRoom(room) {
@@ -73,7 +53,6 @@ function getAllMessagesInRoom(room) {
 }
 
 module.exports = {
-  rooms,
   addUserToRoom,
   removeUserFromRoom,
   doesUsernameExistsInRoom,
@@ -83,7 +62,5 @@ module.exports = {
   addDisconnectedMessageToRoom,
   addRegularMessageToRoom,
   getAllMessagesInRoom,
-  getUsername,
   doesRoomExists,
-  getRoomByUserId,
 };

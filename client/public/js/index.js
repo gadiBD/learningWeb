@@ -80,7 +80,6 @@ function addRoomsToSelect(rooms) {
   })
 }
 
-
 onLoginStatus(handleLoginStatus);
 onAllRooms(addRoomsToSelect)
 

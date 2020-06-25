@@ -22,10 +22,10 @@ const sendButton = document.getElementById("send-button");
 const messageInput = document.getElementById("message-input");
 const typingInfo = document.getElementById("typing-info");
 
-let name = window.sessionStorage.getItem(nameItem);
-let room = window.sessionStorage.getItem(roomItem);
+const name = window.sessionStorage.getItem(nameItem);
+const room = window.sessionStorage.getItem(roomItem);
 
-let finishedTypingTimeout = debounceTimer(typingTimeout, 3000);
+const finishedTypingTimeout = debounceTimer(typingTimeout, 3000);
 
 function submitMessage() {
   messageInput.value = messageInput.value.trim();
@@ -91,12 +91,12 @@ function showAllPreviousMessages(messages) {
 }
 
 function startSession(messages) {
-  showAllPreviousMessages(messages)
-  appendMyMessage(messagesFormatter.youJoined)
+  showAllPreviousMessages(messages);
+  appendMyMessage(messagesFormatter.youJoined);
 }
 
 onNewMessage(appendOtherMessage, (data) =>
-messagesFormatter.otherMessage(data.name, data.message)
+  messagesFormatter.otherMessage(data.name, data.message)
 );
 onNewUser(appendOtherMessage, messagesFormatter.otherJoined);
 onUserDisconnect(appendOtherMessage, messagesFormatter.otherDisconnected);
