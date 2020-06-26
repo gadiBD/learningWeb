@@ -46,7 +46,7 @@ function handleRoomStatus(data) {
 
 function handleLoginStatus(isUsernameTaken) {
   if (isUsernameTaken) {
-    alert(messages.roomTaken);
+    alert(messages.usernameTaken);
   } else {
     startSession();
   }
@@ -91,6 +91,9 @@ sendButton.addEventListener("click", () => {
 newRoomButton.addEventListener("click", () => {
   if (validateRoomTextbox()) {
     emitCreateRoom(roomTextbox.value);
+  } 
+  else {
+    alert(messages.roomNameEmpty)
   }
 });
 

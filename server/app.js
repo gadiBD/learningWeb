@@ -1,15 +1,21 @@
 const {
+  addRoom,
+  getAllRooms,
+  doesRoomExists,
+} = require("./services/roomsService");
+
+const {
   addUserToRoom,
   removeUserFromRoom,
   doesUsernameExistsInRoom,
-  addRoom,
-  getAllRooms,
+} = require("./services/usersService");
+
+const {
   addConnectedMessageToRoom,
   addDisconnectedMessageToRoom,
   addRegularMessageToRoom,
   getAllMessagesInRoom,
-  doesRoomExists,
-} = require("./rooms");
+} = require("./services/messagesService");
 
 const app = require("http").createServer();
 const io = require("socket.io")(app, { pingTimeout: 30000 });
@@ -65,6 +71,8 @@ io.on("connection", (socket) => {
 
   socket.on("join-room", (name, room) => {
     if (!doesRoomExists(room)) {
+      addRoom(room);
+      currentRoom = room;
       console.log(`${name} is creating room: ${room}`);
     }
     if (doesUsernameExistsInRoom(name, room)) {
