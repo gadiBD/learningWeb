@@ -135,3 +135,6 @@ body {
   outline: none;
 }
 
+#chat-container::-webkit-scrollbar {
+  display: none;
+}

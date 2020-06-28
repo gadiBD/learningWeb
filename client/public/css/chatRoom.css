@@ -28,6 +28,10 @@ body {
   border-radius: 10px;
 }
 
+#chat-container::-webkit-scrollbar {
+  display: none;
+}
+
 #top-part {
   display: flex;
   flex-direction: column;
