@@ -95,16 +95,22 @@ function startSession(messages) {
   appendMyMessage(messagesFormatter.youJoined);
 }
 
+function validateSession() {
+  return sessionStorage.getItem(roomItem) && sessionStorage.getItem(nameItem);
+}
+
+function redirectError() {
+  alert(messagesFormatter.error);
+  window.location.href = "/index.html";
+}
+
 onNewMessage(appendOtherMessage, (data) =>
   messagesFormatter.otherMessage(data.name, data.message)
 );
 onNewUser(appendOtherMessage, messagesFormatter.otherJoined);
 onUserDisconnect(appendOtherMessage, messagesFormatter.otherDisconnected);
 onTyping(showTypingMessage);
-onUsernameTaken(() => {
-  alert(messagesFormatter.error);
-  window.location.href = "/index.html";
-});
+onUsernameTaken(redirectError);
 onConnectionSuccessful(startSession);
 
 sendButton.addEventListener("click", () => {
@@ -123,6 +129,11 @@ messageInput.addEventListener("keydown", (e) => {
 });
 
 (function youJoined() {
-  emitJoinRoom(name, room);
-  chatTitle.innerHTML = `Room name: ${room}`;
+  if (validateSession()) {
+    emitJoinRoom(name, room);
+    chatTitle.innerHTML = `Room name: ${room}`;
+  }
+  else {
+    redirectError()
+  }
 })();
