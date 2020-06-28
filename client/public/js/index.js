@@ -5,7 +5,7 @@ import {
   onAllRooms,
   onNewRoom,
   onRoomStatus,
-  emitCreateRoom
+  emitCreateRoom,
 } from "../api/chatApi.js";
 
 import messages from "../lib/messages.js";
@@ -39,7 +39,7 @@ function handleRoomStatus(data) {
   if (data.doesRoomExist) {
     alert(messages.roomTaken);
   } else {
-    addRoomToSelect(data.room)
+    addRoomToSelect(data.room);
     roomSelect.value = data.room;
   }
 }
@@ -52,7 +52,7 @@ function handleLoginStatus(isUsernameTaken) {
   }
 }
 
-function addValuesToForm() {
+function addPreviousValuesToForm() {
   let name = window.sessionStorage.getItem(nameItem);
   if (name) {
     usernameInput.value = name;
@@ -60,6 +60,9 @@ function addValuesToForm() {
   let room = window.sessionStorage.getItem(roomItem);
   if (room) {
     roomSelect.value = room;
+    if (roomSelect.value !== room) {
+      roomSelect.value = -1;
+    }
     roomTextbox.value = room;
   }
 }
@@ -77,7 +80,10 @@ function addRoomToSelect(room) {
 
 onLoginStatus(handleLoginStatus);
 onRoomStatus(handleRoomStatus);
-onAllRooms(addRoomsToSelect);
+onAllRooms((rooms) => {
+  addRoomsToSelect(rooms);
+  addPreviousValuesToForm();
+});
 onNewRoom(addRoomToSelect);
 
 sendButton.addEventListener("click", () => {
@@ -91,11 +97,9 @@ sendButton.addEventListener("click", () => {
 newRoomButton.addEventListener("click", () => {
   if (validateRoomTextbox()) {
     emitCreateRoom(roomTextbox.value);
-  } 
-  else {
-    alert(messages.roomNameEmpty)
+  } else {
+    alert(messages.roomNameEmpty);
   }
 });
 
 emitGetRooms();
-addValuesToForm();

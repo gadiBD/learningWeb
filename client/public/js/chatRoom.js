@@ -16,7 +16,7 @@ import { roomItem, nameItem } from "../lib/sessionStorage.js";
 import { debounceTimer, stopTimer } from "../lib/typingTimeout.js";
 
 const chatContainer = document.getElementById("chat-container");
-const chatTitle = document.getElementById("chat-title");
+const roomName = document.getElementById("room-name");
 const messageContainer = document.getElementById("message-container");
 const sendButton = document.getElementById("send-button");
 const messageInput = document.getElementById("message-input");
@@ -131,7 +131,7 @@ messageInput.addEventListener("keydown", (e) => {
 (function youJoined() {
   if (validateSession()) {
     emitJoinRoom(name, room);
-    chatTitle.innerHTML = `Room name: ${room}`;
+    roomName.innerHTML = room;
   }
   else {
     redirectError()
