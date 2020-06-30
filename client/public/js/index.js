@@ -74,7 +74,7 @@ function addRoomsToSelect(rooms) {
 function addRoomToSelect(room) {
   let option = document.createElement("option");
   option.value = room;
-  option.innerHTML = room;
+  option.innerText = room;
   roomSelect.appendChild(option);
 }
 

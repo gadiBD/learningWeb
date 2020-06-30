@@ -70,10 +70,10 @@ function userIsTyping() {
 
 function showTypingMessage(data) {
   if (data.typing) {
-    typingInfo.innerHTML = messagesFormatter.isTyping(data.user);
+    typingInfo.innerText = messagesFormatter.isTyping(data.user);
     typingInfo.style.display = "block";
   } else {
-    typingInfo.innerHTML = "";
+    typingInfo.innerText = "";
     typingInfo.style.display = "none";
   }
 }
@@ -131,7 +131,7 @@ messageInput.addEventListener("keydown", (e) => {
 (function youJoined() {
   if (validateSession()) {
     emitJoinRoom(name, room);
-    roomName.innerHTML = room;
+    roomName.innerText = room;
   }
   else {
     redirectError()
