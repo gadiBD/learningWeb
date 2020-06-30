@@ -64,6 +64,7 @@ io.on("connection", (socket) => {
     if (!doesRoomExists(room)) {
       addRoom(room);
       currentRoom = room;
+      socket.broadcast.emit(EVENTS.newRoom, room);
       console.log(`${name} is creating room: ${room}`);
     }
     if (doesUsernameExistsInRoom(name, room)) {

@@ -8,7 +8,7 @@ body {
   margin: 0;
 }
 
-@media (max-width : 550px){ 
+@media (max-width : 600px){ 
   #container {
     width: 80% !important
   }
@@ -27,7 +27,7 @@ body {
   margin-top: 5%;
   display: flex;
   height: 60%;
-  width: 40%;
+  width: 45%;
   flex-direction: column;
   justify-content: space-between;
   border: 1px solid black;
@@ -107,6 +107,7 @@ body {
 .room-button {  
   flex-basis: 35%;
   outline: none;
+  margin-left: 5px;
   background-color: #6075fb;
   border: none;
   cursor: pointer;
