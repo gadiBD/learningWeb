@@ -12,6 +12,7 @@ import { ROOM_ITEM, NAME_ITEM } from "../consts/sessionStorage.js";
 import { debounceTimer, stopTimer } from "./typingTimeout.js";
 import { showTypingMessage } from "./typingUI.js";
 
+const disconnectButton = document.getElementById("disconnect-button")
 const roomName = document.getElementById("room-name");
 const sendButton = document.getElementById("send-button");
 const messageInput = document.getElementById("message-input");
@@ -79,6 +80,11 @@ messageInput.addEventListener("keydown", (e) => {
     userIsTyping();
     finishedTypingTimeout();
   }
+});
+
+disconnectButton.addEventListener("click", () => {
+  emitEvent(EVENTS.disconnect)
+  window.location.href = "/index.html";
 });
 
 (function youJoined() {

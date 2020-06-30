@@ -14,5 +14,5 @@ export const EVENTS = {
   loginStatus: "login-status",
   roomStatus: "room-status",
   newRoom: "new-room",
-  shaked: "on-shaked"
+  disconnect: "disconnect"
 };
