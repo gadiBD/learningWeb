@@ -40,7 +40,7 @@ body {
 
 #typing-info {
   align-self: center;
-  margin: 10px;
+  margin-bottom: 10px;
   display: none;
   color: darkblue;
   font-weight: bold;
@@ -52,7 +52,7 @@ body {
   margin-top: 2px;
 }
 
-#chat-title-container {
+#header {
   background-color: #6075FB;
   position: sticky;
   top: 0;
@@ -61,6 +61,29 @@ body {
   flex-direction: column;
   justify-content: center;
   border-bottom: 0.5px solid black;
+}
+
+
+#chat-title-container {
+  margin: 5px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: relative
+}
+
+#disconnect-button {
+  position: absolute;
+  left: 10px;
+  outline: none;
+  background-color: darkblue;
+  border: none;
+  cursor: pointer;
+  color: white;
+  padding: 5px;
+  font-size: 1.2rem;
+  border-radius: 10px;
 }
 
 #chat-title {
