@@ -5,6 +5,10 @@ const {
 } = require("./services/roomsService");
 
 const {
+  EVENTS
+} = require("./consts/events");
+
+const {
   addUserToRoom,
   removeUserFromRoom,
   doesUsernameExistsInRoom,
@@ -26,93 +30,80 @@ io.on("connection", (socket) => {
   let currentUsername;
   let currentRoom;
 
-  socket.on("create-room", (room) => {
+  socket.on(EVENTS.createRoom, (room) => {
     console.log(`Checking room: ${room}`);
     let doesRoomExist = doesRoomExists(room);
 
-    socket.emit("room-status", {
+    socket.emit(EVENTS.roomStatus, {
       doesRoomExist: doesRoomExist,
       room: room,
     });
     
     if (!doesRoomExist) {
       addRoom(room);
-      socket.broadcast.emit("new-room", room);
+      socket.broadcast.emit(EVENTS.newRoom, room);
     }
   });
 
-  socket.on("login-check", (name, room) => {
+  socket.on(EVENTS.loginCheck, ({name, room}) => {
     console.log(`Checking ${name} in room: ${room}`);
     let isUsernameTaken = false;
     let isRoomTaken = doesRoomExists(room);
     if (isRoomTaken) {
       isUsernameTaken = doesUsernameExistsInRoom(name, room);
     }
-    socket.emit("login-status", isUsernameTaken);
+    socket.emit(EVENTS.loginStatus, isUsernameTaken);
   });
 
-  socket.on("check-login", (name, room) => {
-    console.log(`Checking ${name} in room: ${room}`);
-    let isUsernameTaken = false;
-    let isRoomTaken = doesRoomExists(room);
-    if (isRoomTaken) {
-      isUsernameTaken = doesUsernameExistsInRoom(name, room);
-    }
-    socket.emit("login-status", {
-      isUsernameTaken: isUsernameTaken,
-      isRoomTaken: isRoomTaken,
-    });
-  });
-
-  socket.on("get-all-rooms", () => {
+  socket.on(EVENTS.getAllRooms, () => {
     console.log("Getting all rooms");
-    socket.emit("all-rooms", getAllRooms());
+    socket.emit(EVENTS.allRooms, getAllRooms());
   });
 
-  socket.on("join-room", (name, room) => {
+  socket.on(EVENTS.joinRoom, ({name, room}) => {
     if (!doesRoomExists(room)) {
       addRoom(room);
       currentRoom = room;
       console.log(`${name} is creating room: ${room}`);
     }
     if (doesUsernameExistsInRoom(name, room)) {
-      socket.emit("username-taken");
+      socket.emit(EVENTS.usernameTaken);
     } else {
       console.log(`${name} is joining room: ${room}`);
       currentUsername = name;
       currentRoom = room;
       socket.join(room);
-      socket.broadcast.to(room).emit("user-connected", name);
-      socket.emit("connection-successful", getAllMessagesInRoom(room));
+      socket.broadcast.to(room).emit(EVENTS.userConnect, name);
+      socket.emit(EVENTS.connectionSuccessful, getAllMessagesInRoom(room));
       addUserToRoom(socket.id, name, room);
       addConnectedMessageToRoom(name, room);
       console.log(`${name} connected succefully`);
     }
   });
 
-  socket.on("send-chat-message", (message) => {
+  socket.on(EVENTS.sendMessage, (message) => {
     console.log(`${currentUsername} said "${message}" in room ${currentRoom}`);
     addRegularMessageToRoom(currentUsername, message, currentRoom);
-    socket.broadcast.to(currentRoom).emit("new-chat-message", {
+    socket.broadcast.to(currentRoom).emit(EVENTS.newMessage, {
       message: message,
       name: currentUsername,
     });
   });
 
-  socket.on("typing", (data) => {
+  socket.on(EVENTS.userTyping, (data) => {
     console.log(
       `${data.user} is ${data.typing ? "" : "not "}typing in room ${currentRoom}`
     );
-    socket.broadcast.to(currentRoom).emit("typing", data);
+    socket.broadcast.to(currentRoom).emit(EVENTS.userTyping, data);
   });
 
-  socket.on("disconnect", (reason) => {
+  socket.on(EVENTS.disconnect, (reason) => {
     if (currentUsername) {
       console.log(`User disconnect beacuse of: ${reason}`);
       console.log(`${currentUsername} disconnected from room ${currentRoom}`);
       addDisconnectedMessageToRoom(currentUsername, currentRoom);
       removeUserFromRoom(socket.id, currentRoom);
-      socket.broadcast.to(currentRoom).emit("user-disconnected", currentUsername);
+      socket.broadcast.to(currentRoom).emit(EVENTS.userDisconnect, currentUsername);
     }
   });
 });

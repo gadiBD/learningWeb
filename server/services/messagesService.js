@@ -1,4 +1,4 @@
-const { DISCONNECTED, CONNECTED, REGULAR } = require("../lib/messageType");
+const { DISCONNECTED, CONNECTED, REGULAR } = require("../consts/messageType");
 
 const  { rooms } = require("./roomsService.js");
 

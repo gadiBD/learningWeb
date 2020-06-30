@@ -1,19 +1,16 @@
 import {
-  emitLoginCheck,
-  onLoginStatus,
-  emitGetRooms,
-  onAllRooms,
-  onNewRoom,
-  onRoomStatus,
-  emitCreateRoom,
+  emitEvent,
+  onEvent,
 } from "../api/chatApi.js";
 
-import messages from "../lib/messages.js";
-import { roomItem, nameItem } from "../lib/sessionStorage.js";
+import { EVENTS } from "../api/events.js";
+import messages from "./messagesFormatter.js";
+import { ROOM_ITEM, NAME_ITEM } from "../consts/sessionStorage.js";
+import { addRoomsToSelect, addRoomToSelect, validateRoomSelect } from "./roomSelectUI.js";
 
+const roomSelect = document.getElementById("room-select");
 const sendButton = document.getElementById("send-button");
 const roomTextbox = document.getElementById("new-room-input");
-const roomSelect = document.getElementById("room-select");
 const newRoomButton = document.getElementById("new-room-button");
 const usernameInput = document.getElementById("username");
 
@@ -21,17 +18,13 @@ function validateName() {
   return usernameInput.value.trim();
 }
 
-function validateRoomSelect() {
-  return roomSelect.value !== "-1";
-}
-
 function validateRoomTextbox() {
   return roomTextbox.value.trim();
 }
 
 function startSession() {
-  window.sessionStorage.setItem(nameItem, usernameInput.value);
-  window.sessionStorage.setItem(roomItem, roomSelect.value);
+  window.sessionStorage.setItem(NAME_ITEM, usernameInput.value);
+  window.sessionStorage.setItem(ROOM_ITEM, roomSelect.value);
   window.location.href = "/chatRoom.html";
 }
 
@@ -53,11 +46,11 @@ function handleLoginStatus(isUsernameTaken) {
 }
 
 function addPreviousValuesToForm() {
-  let name = window.sessionStorage.getItem(nameItem);
+  let name = window.sessionStorage.getItem(NAME_ITEM);
   if (name) {
     usernameInput.value = name;
   }
-  let room = window.sessionStorage.getItem(roomItem);
+  let room = window.sessionStorage.getItem(ROOM_ITEM);
   if (room) {
     roomSelect.value = room;
     if (roomSelect.value !== room) {
@@ -67,28 +60,20 @@ function addPreviousValuesToForm() {
   }
 }
 
-function addRoomsToSelect(rooms) {
-  rooms.forEach(addRoomToSelect);
-}
-
-function addRoomToSelect(room) {
-  let option = document.createElement("option");
-  option.value = room;
-  option.innerText = room;
-  roomSelect.appendChild(option);
-}
-
-onLoginStatus(handleLoginStatus);
-onRoomStatus(handleRoomStatus);
-onAllRooms((rooms) => {
+onEvent(EVENTS.loginStatus, handleLoginStatus);
+onEvent(EVENTS.roomStatus, handleRoomStatus);
+onEvent(EVENTS.allRooms, (rooms) => {
   addRoomsToSelect(rooms);
   addPreviousValuesToForm();
 });
-onNewRoom(addRoomToSelect);
+onEvent(EVENTS.newRoom, addRoomToSelect);
 
 sendButton.addEventListener("click", () => {
   if (validateName() && validateRoomSelect()) {
-    emitLoginCheck(usernameInput.value, roomSelect.value);
+    emitEvent(EVENTS.loginCheck, {
+      name: usernameInput.value,
+      room: roomSelect.value,
+    });
   } else {
     alert(messages.validationError);
   }
@@ -96,10 +81,10 @@ sendButton.addEventListener("click", () => {
 
 newRoomButton.addEventListener("click", () => {
   if (validateRoomTextbox()) {
-    emitCreateRoom(roomTextbox.value);
+    emitEvent(EVENTS.createRoom, roomTextbox.value);
   } else {
     alert(messages.roomNameEmpty);
   }
 });
 
-emitGetRooms();
+emitEvent(EVENTS.getAllRooms, roomTextbox.value);

@@ -1,29 +1,23 @@
+import { emitEvent, onEvent } from "../api/chatApi.js";
+
 import {
-  onNewMessage,
-  onUserDisconnect,
-  onNewUser,
-  onTyping,
-  emitNewMessage,
-  emitTyping,
-  emitJoinRoom,
-  onUsernameTaken,
-  onConnectionSuccessful,
-} from "../api/chatApi.js";
+  appendMyMessage,
+  appendOtherMessage,
+  showAllPreviousMessages,
+} from "./messagesUI.js";
 
-import { DISCONNECTED, CONNECTED } from "../lib/messageType.js";
-import messagesFormatter from "../lib/messages.js";
-import { roomItem, nameItem } from "../lib/sessionStorage.js";
-import { debounceTimer, stopTimer } from "../lib/typingTimeout.js";
+import { EVENTS } from "../api/events.js";
+import messagesFormatter from "./messagesFormatter.js";
+import { ROOM_ITEM, NAME_ITEM } from "../consts/sessionStorage.js";
+import { debounceTimer, stopTimer } from "./typingTimeout.js";
+import { showTypingMessage } from "./typingUI.js";
 
-const chatContainer = document.getElementById("chat-container");
 const roomName = document.getElementById("room-name");
-const messageContainer = document.getElementById("message-container");
 const sendButton = document.getElementById("send-button");
 const messageInput = document.getElementById("message-input");
-const typingInfo = document.getElementById("typing-info");
 
-const name = window.sessionStorage.getItem(nameItem);
-const room = window.sessionStorage.getItem(roomItem);
+const name = window.sessionStorage.getItem(NAME_ITEM);
+const room = window.sessionStorage.getItem(ROOM_ITEM);
 
 const finishedTypingTimeout = debounceTimer(typingTimeout, 3000);
 
@@ -32,62 +26,17 @@ function submitMessage() {
   if (messageInput.value) {
     const message = messageInput.value;
     appendMyMessage(messagesFormatter.yourMessage(message));
-    emitNewMessage(message);
+    emitEvent(EVENTS.sendMessage, message);
     messageInput.value = "";
   }
 }
 
-function appendMyMessage(message) {
-  appendMessage(message, "myMessage");
-}
-
-function appendOtherMessage(message) {
-  appendMessage(message, "otherMessage");
-}
-
-function appendMessage(message, messageClass) {
-  const bdi = document.createElement("bdi");
-  const messageElement = document.createElement("div");
-  messageElement.appendChild(bdi);
-  messageElement.classList.add(messageClass);
-  bdi.innerText = message;
-  messageContainer.append(messageElement);
-  moveScrollbar();
-  messageElement.classList.add("horizontalTrasnition");
-}
-
-function moveScrollbar() {
-  chatContainer.scrollTop = chatContainer.scrollHeight - chatContainer.clientHeight;
-}
-
 function typingTimeout() {
-  emitTyping({ user: name, typing: false });
+  emitEvent(EVENTS.userTyping, { user: name, typing: false });
 }
 
 function userIsTyping() {
-  emitTyping({ user: name, typing: true });
-}
-
-function showTypingMessage(data) {
-  if (data.typing) {
-    typingInfo.innerText = messagesFormatter.isTyping(data.user);
-    typingInfo.style.display = "block";
-  } else {
-    typingInfo.innerText = "";
-    typingInfo.style.display = "none";
-  }
-}
-
-function showAllPreviousMessages(messages) {
-  messages.forEach((element) => {
-    if (element.type === DISCONNECTED) {
-      appendOtherMessage(messagesFormatter.otherDisconnected(element.sender));
-    } else if (element.type === CONNECTED) {
-      appendOtherMessage(messagesFormatter.otherJoined(element.sender));
-    } else {
-      appendOtherMessage(messagesFormatter.otherMessage(element.sender, element.message));
-    }
-  });
+  emitEvent(EVENTS.userTyping, { user: name, typing: true });
 }
 
 function startSession(messages) {
@@ -96,7 +45,7 @@ function startSession(messages) {
 }
 
 function validateSession() {
-  return sessionStorage.getItem(roomItem) && sessionStorage.getItem(nameItem);
+  return sessionStorage.getItem(ROOM_ITEM) && sessionStorage.getItem(NAME_ITEM);
 }
 
 function redirectError() {
@@ -104,14 +53,18 @@ function redirectError() {
   window.location.href = "/index.html";
 }
 
-onNewMessage(appendOtherMessage, (data) =>
-  messagesFormatter.otherMessage(data.name, data.message)
-);
-onNewUser(appendOtherMessage, messagesFormatter.otherJoined);
-onUserDisconnect(appendOtherMessage, messagesFormatter.otherDisconnected);
-onTyping(showTypingMessage);
-onUsernameTaken(redirectError);
-onConnectionSuccessful(startSession);
+onEvent(EVENTS.newMessage, (payload) => {
+  appendOtherMessage(messagesFormatter.otherMessage(payload.name, payload.message));
+});
+onEvent(EVENTS.userConnect, (payload) => {
+  appendOtherMessage(messagesFormatter.otherJoined(payload));
+});
+onEvent(EVENTS.userDisconnect, (payload) => {
+  appendOtherMessage(messagesFormatter.otherDisconnected(payload));
+});
+onEvent(EVENTS.userTyping, showTypingMessage);
+onEvent(EVENTS.usernameTaken, redirectError);
+onEvent(EVENTS.connectionSuccessful, startSession);
 
 sendButton.addEventListener("click", () => {
   submitMessage();
@@ -130,10 +83,9 @@ messageInput.addEventListener("keydown", (e) => {
 
 (function youJoined() {
   if (validateSession()) {
-    emitJoinRoom(name, room);
+    emitEvent(EVENTS.joinRoom, { name: name, room: room });
     roomName.innerText = room;
-  }
-  else {
-    redirectError()
+  } else {
+    redirectError();
   }
 })();
